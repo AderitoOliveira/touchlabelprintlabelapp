@@ -1,15 +1,17 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
+import ListOrders from '@/components/ListOrders'
 
 Vue.use(Router)
 
 export default new Router({
+  base: '/',
+  assetsPublicPath: 'file:///android_asset/www/dist/index.html',
   routes: [
     {
       path: '/',
-      name: 'HelloWorld',
-      component: HelloWorld
+      name: 'ListOrders',
+      component: ListOrders
     }
   ]
 })
