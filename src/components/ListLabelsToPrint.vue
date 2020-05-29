@@ -54,10 +54,10 @@
                     <li class="order-item-detail col-md-2"><div class="item-inner">{{label.QTY_LABELS_TO_PRINT_ARTICLE}} / <strong>{{label.QTY_LABELS_TO_PRINT_BOX}}</strong></div></li>
                     <div class="col-md-3 table-item item-actions flex-right">
                         <!-- <a class="btn btn-black" v-if="true" @click="launchModal('close_for_paint')" data-toggle="tooltip"> -->
-                          <a class="btn btn-black" v-if="true" @click="printLabelArticle(label.UNIQUE_ID, label.CUSTOMER_PRODUCT_ID, label.ORDER_ID, label.QTY_LABELS_TO_PRINT_ARTICLE, label.BOX_LABEL_ALREADY_PRINTED) " data-toggle="tooltip">
+                          <a class="btn btn-black" v-if="true" @click="printLabelArticle(label.UNIQUE_ID, label.CUSTOMER_PRODUCT_ID, label.ORDER_ID, label.QTY_LABELS_TO_PRINT_ARTICLE, label.BOX_LABEL_ALREADY_PRINTED)" data-toggle="tooltip">
                             <img src="../assets/icons/vase-btn.svg" width="20px" height="18px" />Imprimir Artigo
                         </a>
-                        <a class="btn btn-black btn-outline" v-if="true"   @click="printProductBoxLabels(productLabel.UNIQUE_ID, productLabel.CUSTOMER_PRODUCT_ID, productLabel.ORDER_ID, productLabel.QTY_LABELS_TO_PRINT_BOX, productLabel.ARTICLE_LABEL_ALREADY_PRINTED)" data-toggle="tooltip" title="Imprimir Etiquetas Caixa">
+                        <a class="btn btn-black btn-outline" v-if="true"   @click="printBoxLabels(label.UNIQUE_ID, label.CUSTOMER_PRODUCT_ID, label.ORDER_ID, label.QTY_LABELS_TO_PRINT_BOX, label.ARTICLE_LABEL_ALREADY_PRINTED)" data-toggle="tooltip" title="Imprimir Etiquetas Caixa">
                             <img src="../assets/icons/box-btn.svg" width="20px" height="18px" />Imprimir Caixa
                         </a>
                         <!--a class="btn btn-lg btn-remove" ng-click="deleteLabelToPrint(productLabel.UNIQUE_ID, productLabel.ORDER_ID, productLabel.CUSTOMER_PRODUCT_ID)" data-toggle="tooltip" title="Remover Etiquetas">
@@ -193,11 +193,37 @@ export default {
       }
       this.$refs['modal-paint'].show()
     },
+    timer (ms) {
+      return new Promise(resolve => setTimeout(resolve, ms))
+    },
+    async executeCycleToPrintLabels (zplString, totalLabelsToPrint, digitsForPadding, printerIPAddress, printerPort) { // We need to wrap the loop into an async function for this to work
+      let zplStringAux = zplString
+
+      console.log('Inside executeCycleToPrintLabels')
+      console.log('totalLabelsToPrint: ' + totalLabelsToPrint)
+
+      for (let i = 1; i <= totalLabelsToPrint; i++) {
+        let counterValueTestLabel = this.padDigits(i, digitsForPadding) + ''
+
+        let map = {
+          '_COUNTER_VALUE': counterValueTestLabel
+        }
+
+        let sendToPrinterAllLabels = this.replaceAll(zplStringAux, map)
+        this.sendZplToPrinter(printerIPAddress, printerPort, zplString)
+        zplStringAux = zplString
+        console.log('ZPL_FINAL:' + sendToPrinterAllLabels)
+        console.log('*******************************************************************************************')
+
+        await this.timer(4000) // then the created Promise can be awaited
+      }
+    },
     async launchSecondModal () {
       this.$refs['modal-paint'].hide()
       this.modal_action = false
 
       let data = this.first_modal_action_object
+      console.log('launchSecondModal')
       console.log('data inside modal: ' + JSON.stringify(data))
 
       let zplString = this.first_modal_action_object.zpl_to_print
@@ -213,10 +239,10 @@ export default {
       let totalLabelsToPrint = this.first_modal_action_object.totalLabelsToPrint
       let quantityArticleLabels = this.first_modal_action_object.quantityArticleLabels
 
-      let operationsToExecute =  []
+      let operationsToExecute = []
       let dataToDelete = []
 
-      console.log('labelHasCounter: ' + labelHasCounter)
+      // console.log('labelHasCounter: ' + labelHasCounter)
 
       if (this.actiontype === 'article_label') {
         this.modal = {
@@ -235,7 +261,9 @@ export default {
 
       // START OF THE PRINT
 
-      if (labelHasCounter === 'false') {
+      console.log('labelHasCounter: ' + labelHasCounter)
+
+      if (labelHasCounter === 'false' || (labelHasCounter === 'true' && this.actiontype === 'article_label')) {
         this.sendZplToPrinter(printerIPAddress, printerPort, zplString)
 
         // IF THE ARTICLE LABELS WHERE ALREADY PRINTED, THEN THIS RECORD SHOULD BE DELETED
@@ -262,32 +290,10 @@ export default {
       } else { // THE LABEL HAS A COUNTER
         let digitsForPadding = totalLabelsToPrint.toString().length
 
+        console.log('THE LABEL HAS A COUNTER')
         // Returns a Promise that resolves after "ms" Milliseconds
-        function timer (ms) {
-          return new Promise(resolve => setTimeout(resolve, ms))
-        }
 
-        async function executeCycleToPrintLabels () { // We need to wrap the loop into an async function for this to work
-          let zplStringAux = zplString
-
-          for (let i = 1; i <= totalLabelsToPrint; i++) {
-            let counterValueTestLabel = this.padDigits(i, digitsForPadding) + ''
-
-            let map = {
-              '_COUNTER_VALUE': counterValueTestLabel
-            }
-
-            let sendToPrinterAllLabels = this.replaceAll(zplStringAux, map)
-            this.sendZplToPrinter(printerIPAddress, printerPort, zplString)
-            zplStringAux = zplString
-            console.log('ZPL_FINAL:' + sendToPrinterAllLabels)
-            console.log('*******************************************************************************************')
-
-            await timer(4000) // then the created Promise can be awaited
-          }
-        }
-
-        await executeCycleToPrintLabels()
+        await this.executeCycleToPrintLabels(zplString, totalLabelsToPrint, digitsForPadding, printerIPAddress, printerPort)
 
         // IF THE ARTICLE LABELS WHERE ALREADY PRINTED, THEN THIS RECORD SHOULD BE DELETED
         if (labelBeingPrinted === 'box') {
@@ -331,7 +337,7 @@ export default {
       return (10 - (result % 10)) % 10
     },
     sendZplToPrinter (printerIPAddress, printerPort, zpl) {
-      console.log('Zpl Enviado para a Impressora' + zpl)
+      // console.log('Zpl Enviado para a Impressora' + zpl)
 
       let url = 'http://' + printerIPAddress + ':' + printerPort
       let method = 'POST'
@@ -358,23 +364,23 @@ export default {
     async getLabelToPrintDetails (customerProductId) {
       let data = ''
       await axios({method: 'GET', 'url': sitebase + 'labelToPrintForProduct/' + customerProductId}).then(result => {
-        console.log(sitebase + 'labelToPrintForProduct/' + 143139)
+        // console.log(sitebase + 'labelToPrintForProduct/' + 143139)
         data = result.data
-        console.log(result.data)
+        // console.log(result.data)
       }, error => {
         console.error(error)
       })
       return data
     },
     async printLabelArticle (uniqueId, customerProductId, orderId, quantityArticleLabels, boxLabelAlreadyPrinted) {
-      console.log(uniqueId)
-      console.log(customerProductId)
+      // console.log(uniqueId)
+      // console.log(customerProductId)
 
       let labelToPrintDetails = await this.getLabelToPrintDetails(customerProductId)
       // let K = JSON.parse(JSON.stringify(labelToPrintDetails))
-      console.log('X: ' + JSON.stringify(labelToPrintDetails))
-      console.log('CUSTOMER_PRODUCT_ID: ' + labelToPrintDetails[0].CUSTOMER_PRODUCT_ID)
-      console.log('XPTO')
+      // console.log('X: ' + JSON.stringify(labelToPrintDetails))
+      // console.log('CUSTOMER_PRODUCT_ID: ' + labelToPrintDetails[0].CUSTOMER_PRODUCT_ID)
+      // console.log('XPTO')
       let barCodeNumber = labelToPrintDetails[0].Bar_Code_Tech_Sheet
       let productNameForLabel = labelToPrintDetails[0].PRODUCT_NAME_FOR_LABEL
       let ZPLString = labelToPrintDetails[0].ZPL_STRING_ARTICLE
@@ -385,8 +391,8 @@ export default {
       let ZPL_STRING_ARTICLE_2_COLUMNS_MULTIPLE_LABEL_TEST = labelToPrintDetails[0].ZPL_STRING_ARTICLE_2_COLUMNS_MULTIPLE_LABEL
       let printerIPAddress = labelToPrintDetails[0].ARTICLE_PRINTER_IP_ADDRESS
       let printerPort = labelToPrintDetails[0].ARTICLE_PRINTER_PORT
-      let LabelHasCounter = labelToPrintDetails[0].LABEL_HAS_COUNTER
-      let NumberLabelsOnArticle = labelToPrintDetails[0].NUMBER_LABELS_ON_ARTICLE
+      let labelHasCounter = labelToPrintDetails[0].LABEL_HAS_COUNTER
+      let numberLabelsOnArticle = labelToPrintDetails[0].NUMBER_LABELS_ON_ARTICLE
       let labelsWith2Columns = labelToPrintDetails[0].ARTICLE_LABEL_WITH_2_COLUMNS
       let checkDigit = 0
       let eanWithCheckDigit = 0
@@ -405,8 +411,8 @@ export default {
         quantityToReplace = 0
       }
 
-      if (LabelHasCounter === 'true') {
-        quantityArticleLabels = quantityArticleLabels * NumberLabelsOnArticle
+      if (labelHasCounter === 'true') {
+        quantityArticleLabels = quantityArticleLabels * numberLabelsOnArticle
       }
 
       let mapTestLabel = {
@@ -489,14 +495,224 @@ export default {
         'customerProductId': customerProductId,
         'articleLabelAlreadyPrinted': 'false',
         'boxLabelAlreadyPrinted': boxLabelAlreadyPrinted,
-        'labelHasCounter': 'false',
-        'totalLabelsToPrint': 0,
+        'labelHasCounter': labelHasCounter,
+        'totalLabelsToPrint': quantityArticleLabels,
         'quantityArticleLabels': quantityArticleLabels
       }
 
       this.launchModal('article_label')
 
       // this.first_modal_action_object = {}
+    },
+    async printBoxLabels (uniqueId, customerProductId, orderId, quantityBoxLabels, articleLabelAlreadyPrinted) {
+      let labelToPrintDetails = await this.getLabelToPrintDetails(customerProductId)
+
+      let barCodeNumber = labelToPrintDetails[0].Bar_Code_Tech_Sheet
+      let qtyByBox = labelToPrintDetails[0].Qty_By_Box
+      let productNameForLabel = labelToPrintDetails[0].PRODUCT_NAME_FOR_LABEL
+      let boxBarCodeType = labelToPrintDetails[0].BOX_BARCODE_TYPE
+      let zplStringTestLabel = labelToPrintDetails[0].ZPL_STRING_BOX
+      let zplStringAllLabels = labelToPrintDetails[0].ZPL_STRING_BOX
+      let printerIPAddress = labelToPrintDetails[0].BOX_PRINTER_IP_ADDRESS
+      let printerPort = labelToPrintDetails[0].BOX_PRINTER_PORT
+      let labelHasCounter = labelToPrintDetails[0].LABEL_HAS_COUNTER
+      let numberLabelsOnArticle = labelToPrintDetails[0].NUMBER_LABELS_ON_ARTICLE
+      let numberLabelsOnBox = labelToPrintDetails[0].NUMBER_LABELS_ON_BOX
+      let FullEan = ''
+      let checkDigit = ''
+      let EanWithCheckDigit = ''
+      let quantityFull = ''
+      let sendToPrinterTestLabel = ''
+      let sendToPrinterAllLabels = ''
+
+      if (labelHasCounter === 'false') {
+        if (boxBarCodeType === 'GS1-128') {
+          quantityFull = this.padDigits(qtyByBox, 4)
+
+          if (barCodeNumber.charAt(0) !== '0') {
+            barCodeNumber = '0' + barCodeNumber
+            EanWithCheckDigit = barCodeNumber
+            FullEan = '802' + barCodeNumber + '37' + quantityFull
+          } else {
+            checkDigit = this.eanCheckDigit('' + barCodeNumber)
+            EanWithCheckDigit = barCodeNumber + checkDigit
+            // In the 802 the 8 it's for the size of the code bar and the 02 is the Application Identifier of the
+            // GS1-128 BarCode
+            FullEan = '802' + barCodeNumber + checkDigit + '37' + quantityFull
+          }
+
+          let map = {
+            '_EAN_CHECK_DIGIT': EanWithCheckDigit,
+            '_QUANTIDADE_EXTENDIDA': quantityFull,
+            '_FULL_EAN': FullEan,
+            '_NUM_ARTIGO': customerProductId,
+            '_NOME_ARTIGO': productNameForLabel,
+            '_ORDER_ID': orderId,
+            '_QUANTIDADE': qtyByBox,
+            '_PRINT_QUANTITY': quantityBoxLabels
+          }
+
+          let mapTestLabel = {
+            '_EAN_CHECK_DIGIT': EanWithCheckDigit,
+            '_QUANTIDADE_EXTENDIDA': quantityFull,
+            '_FULL_EAN': FullEan,
+            '_NUM_ARTIGO': customerProductId,
+            '_NOME_ARTIGO': productNameForLabel,
+            '_ORDER_ID': orderId,
+            '_QUANTIDADE': qtyByBox,
+            '_PRINT_QUANTITY': 1
+          }
+
+          sendToPrinterTestLabel = this.replaceAll(zplStringTestLabel, mapTestLabel)
+
+          sendToPrinterAllLabels = this.replaceAll(zplStringAllLabels, map)
+
+          this.sendZplToPrinter(printerIPAddress, printerPort, sendToPrinterTestLabel)
+        }
+
+        if (boxBarCodeType === 'EAN13') {
+          quantityFull = this.padDigits(qtyByBox, 4)
+
+          // We need to remove the first digit to calculate the checksum for the EAN-13
+          if (barCodeNumber.charAt(0) === '0') {
+            barCodeNumber = barCodeNumber.slice(1)
+            checkDigit = this.eanCheckDigit('' + barCodeNumber)
+            EanWithCheckDigit = barCodeNumber + checkDigit
+          } else {
+            EanWithCheckDigit = barCodeNumber
+          }
+
+          let map = {
+            '_EAN_CHECK_DIGIT': EanWithCheckDigit,
+            '_QUANTIDADE_EXTENDIDA': quantityFull,
+            '_NUM_ARTIGO': customerProductId,
+            '_ORDER_ID': orderId,
+            '_QUANTIDADE': qtyByBox,
+            '_PRINT_QUANTITY': quantityBoxLabels
+          }
+
+          let mapTestLabel = {
+            '_EAN_CHECK_DIGIT': EanWithCheckDigit,
+            '_QUANTIDADE_EXTENDIDA': quantityFull,
+            '_FULL_EAN': FullEan,
+            '_NUM_ARTIGO': customerProductId,
+            '_ORDER_ID': orderId,
+            '_QUANTIDADE': qtyByBox,
+            '_PRINT_QUANTITY': 1
+          }
+
+          if (productNameForLabel.indexOf('\n') === -1) {
+            map._NOME_ARTIGO = productNameForLabel
+            mapTestLabel._NOME_ARTIGO = productNameForLabel
+          } else {
+            let productNameForLabelSplit = productNameForLabel.split('\n')
+
+            let nomeArtigo = productNameForLabelSplit[0]
+            map._NOME_ARTIGO = nomeArtigo
+            mapTestLabel._NOME_ARTIGO = nomeArtigo
+
+            for (let i = 1; i < productNameForLabelSplit.length; i++) {
+              map['_ARTIGO_NOME_EXT_' + i] = productNameForLabelSplit[i]
+              mapTestLabel['_ARTIGO_NOME_EXT_' + i] = productNameForLabelSplit[i]
+            }
+          }
+
+          sendToPrinterTestLabel = this.replaceAll(zplStringTestLabel, mapTestLabel)
+
+          sendToPrinterAllLabels = this.replaceAll(zplStringAllLabels, map)
+
+          this.sendZplToPrinter(printerIPAddress, printerPort, sendToPrinterTestLabel)
+        }
+
+        this.first_modal_action_object = {
+          'zpl_to_print': sendToPrinterAllLabels,
+          'printer_ip_address': printerIPAddress,
+          'printer_port': printerPort,
+          'labelBeingPrinted': 'box',
+          'uniqueId': uniqueId,
+          'orderId': orderId,
+          'customerProductId': customerProductId,
+          'articleLabelAlreadyPrinted': articleLabelAlreadyPrinted,
+          'boxLabelAlreadyPrinted': 'false',
+          'labelHasCounter': labelHasCounter,
+          'totalLabelsToPrint': quantityBoxLabels,
+          'quantityArticleLabels': quantityBoxLabels
+        }
+
+        this.launchModal('box_label')
+      } else { // THE LABEL HAS A COUNTER
+        // We need to remove the first digit to calculate the checksum for the EAN-13
+        if (barCodeNumber.charAt(0) === '0') {
+          barCodeNumber = barCodeNumber.slice(1)
+          checkDigit = this.eanCheckDigit('' + barCodeNumber)
+          EanWithCheckDigit = barCodeNumber + checkDigit
+        } else {
+          EanWithCheckDigit = barCodeNumber
+        }
+
+        let map = {
+          '_EAN_CHECK_DIGIT': EanWithCheckDigit,
+          '_QUANTIDADE_EXTENDIDA': quantityFull,
+          '_NUM_ARTIGO': customerProductId,
+          '_ORDER_ID': orderId,
+          '_QUANTIDADE': qtyByBox,
+          '_PRINT_QUANTITY': numberLabelsOnBox, // THIS IS THE NUMBER OF LABELS IN EACH BOX (2, 3, etc ...)
+          '_COUNTER_MAX_VALUE': quantityBoxLabels
+        }
+
+        let counterValueTestLabel = this.padDigits(1, quantityBoxLabels.toString().length) + ''
+
+        let mapTestLabel = {
+          '_EAN_CHECK_DIGIT': EanWithCheckDigit,
+          '_QUANTIDADE_EXTENDIDA': quantityFull,
+          '_FULL_EAN': FullEan,
+          '_NUM_ARTIGO': customerProductId,
+          '_ORDER_ID': orderId,
+          '_QUANTIDADE': qtyByBox,
+          '_PRINT_QUANTITY': 1,
+          '_COUNTER_MAX_VALUE': quantityBoxLabels,
+          '_COUNTER_VALUE': counterValueTestLabel
+        }
+
+        if (productNameForLabel.indexOf('\n') === -1) {
+          map._NOME_ARTIGO = productNameForLabel
+          mapTestLabel._NOME_ARTIGO = productNameForLabel
+        } else {
+          let productNameForLabelSplit = productNameForLabel.split('\n')
+
+          let nomeArtigo = productNameForLabelSplit[0]
+          map._NOME_ARTIGO = nomeArtigo
+          mapTestLabel._NOME_ARTIGO = nomeArtigo
+
+          for (let i = 1; i < productNameForLabelSplit.length; i++) {
+            map['_ARTIGO_NOME_EXT_' + i] = productNameForLabelSplit[i]
+            mapTestLabel['_ARTIGO_NOME_EXT_' + i] = productNameForLabelSplit[i]
+          }
+        }
+
+        sendToPrinterTestLabel = this.replaceAll(zplStringTestLabel, mapTestLabel)
+
+        sendToPrinterAllLabels = this.replaceAll(zplStringAllLabels, map)
+
+        this.sendZplToPrinter(printerIPAddress, printerPort, sendToPrinterTestLabel)
+
+        this.first_modal_action_object = {
+          'zpl_to_print': sendToPrinterAllLabels,
+          'printer_ip_address': printerIPAddress,
+          'printer_port': printerPort,
+          'labelBeingPrinted': 'box',
+          'uniqueId': uniqueId,
+          'orderId': orderId,
+          'customerProductId': customerProductId,
+          'articleLabelAlreadyPrinted': articleLabelAlreadyPrinted,
+          'boxLabelAlreadyPrinted': 'false',
+          'labelHasCounter': labelHasCounter,
+          'totalLabelsToPrint': quantityBoxLabels,
+          'quantityArticleLabels': quantityBoxLabels
+        }
+
+        this.launchModal('box_label')
+      }
     }
   }
 }
