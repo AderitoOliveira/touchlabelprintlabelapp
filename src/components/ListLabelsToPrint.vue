@@ -54,10 +54,10 @@
                     <li class="order-item-detail col-md-2"><div class="item-inner">{{label.QTY_LABELS_TO_PRINT_ARTICLE}} / <strong>{{label.QTY_LABELS_TO_PRINT_BOX}}</strong></div></li>
                     <div class="col-md-3 table-item item-actions flex-right">
                         <!-- <a class="btn btn-black" v-if="true" @click="launchModal('close_for_paint')" data-toggle="tooltip"> -->
-                          <a class="btn btn-black" v-if="true" @click="printLabelArticle(label.UNIQUE_ID, label.CUSTOMER_PRODUCT_ID, label.ORDER_ID, label.QTY_LABELS_TO_PRINT_ARTICLE, label.BOX_LABEL_ALREADY_PRINTED)" data-toggle="tooltip">
+                          <a class="btn btn-black" v-if="label.ARTICLE_LABEL_ALREADY_PRINTED === 'false'" @click="printLabelArticle(label.UNIQUE_ID, label.CUSTOMER_PRODUCT_ID, label.ORDER_ID, label.QTY_LABELS_TO_PRINT_ARTICLE, label.BOX_LABEL_ALREADY_PRINTED)" data-toggle="tooltip">
                             <img src="../assets/icons/vase-btn.svg" width="20px" height="18px" />Imprimir Artigo
                         </a>
-                        <a class="btn btn-black btn-outline" v-if="true"   @click="printBoxLabels(label.UNIQUE_ID, label.CUSTOMER_PRODUCT_ID, label.ORDER_ID, label.QTY_LABELS_TO_PRINT_BOX, label.ARTICLE_LABEL_ALREADY_PRINTED)" data-toggle="tooltip" title="Imprimir Etiquetas Caixa">
+                        <a class="btn btn-black btn-outline" v-if="label.BOX_LABEL_ALREADY_PRINTED === 'false'"   @click="printBoxLabels(label.UNIQUE_ID, label.CUSTOMER_PRODUCT_ID, label.ORDER_ID, label.QTY_LABELS_TO_PRINT_BOX, label.ARTICLE_LABEL_ALREADY_PRINTED)" data-toggle="tooltip" title="Imprimir Etiquetas Caixa">
                             <img src="../assets/icons/box-btn.svg" width="20px" height="18px" />Imprimir Caixa
                         </a>
                         <!--a class="btn btn-lg btn-remove" ng-click="deleteLabelToPrint(productLabel.UNIQUE_ID, productLabel.ORDER_ID, productLabel.CUSTOMER_PRODUCT_ID)" data-toggle="tooltip" title="Remover Etiquetas">
@@ -97,7 +97,7 @@
       :footer-class="(modal_action ? 'no_action' : 'action')"
       cancelTitle="Cancelar"
       :ok-only="modal_action"
-      @ok="sendUpdateFromModal()"
+      @ok="executeLabelsPostOperations()"
     >
       <p class="my-4">{{modal.content}}</p>
     </b-modal>
@@ -132,6 +132,7 @@ export default {
       centermodal: ['centermodal'],
       first_modal_action_object: {},
       second_modal_action_object: {},
+      operations_to_execute_after_print: {},
       modal: {
         title: 'Default Modal Title',
         content: 'this is the modal content',
@@ -269,22 +270,38 @@ export default {
         // IF THE ARTICLE LABELS WHERE ALREADY PRINTED, THEN THIS RECORD SHOULD BE DELETED
         if (labelBeingPrinted === 'box') {
           if (articleLabelAlreadyPrinted === 'true') {
-            operationsToExecute = ['/deleteLabelsToPrint']
-            dataToDelete = [{ 'UNIQUE_ID': uniqueId, 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+            // operationsToExecute = ['/deleteLabelsToPrint']
+            // dataToDelete = [{ 'UNIQUE_ID': uniqueId, 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+            this.operations_to_execute_after_print = {
+              'operationsToExecute': ['deleteLabelsToPrint'],
+              'dataToDelete': [{ 'UNIQUE_ID': uniqueId, 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+            }
           } else {
-            operationsToExecute = ['/updateLabelAlreadyPrinted']
-            dataToDelete = [{ 'COLUMN_TO_UPDATE': 'BOX_LABEL_ALREADY_PRINTED', 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+            // operationsToExecute = ['/updateLabelAlreadyPrinted']
+            // dataToDelete = [{ 'COLUMN_TO_UPDATE': 'BOX_LABEL_ALREADY_PRINTED', 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+            this.operations_to_execute_after_print = {
+              'operationsToExecute': ['updateLabelAlreadyPrinted'],
+              'dataToDelete': [{ 'COLUMN_TO_UPDATE': 'BOX_LABEL_ALREADY_PRINTED', 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+            }
           }
         }
 
         if (labelBeingPrinted === 'article') {
           // IF THE BOX LABELS WHERE ALREADY PRINTED, THEN THIS RECORD SHOULD BE DELETED
           if (boxLabelAlreadyPrinted === 'true') {
-            operationsToExecute = ['/deleteLabelsToPrint']
-            dataToDelete = [{ 'UNIQUE_ID': uniqueId, 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+            // operationsToExecute = ['/deleteLabelsToPrint']
+            // dataToDelete = [{ 'UNIQUE_ID': uniqueId, 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+            this.operations_to_execute_after_print = {
+              'operationsToExecute': ['deleteLabelsToPrint'],
+              'dataToDelete': [{ 'UNIQUE_ID': uniqueId, 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+            }
           } else {
-            operationsToExecute = ['/updateLabelAlreadyPrinted']
-            dataToDelete = [{ 'COLUMN_TO_UPDATE': 'ARTICLE_LABEL_ALREADY_PRINTED', 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+            // operationsToExecute = ['/updateLabelAlreadyPrinted']
+            // dataToDelete = [{ 'COLUMN_TO_UPDATE': 'ARTICLE_LABEL_ALREADY_PRINTED', 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+            this.operations_to_execute_after_print = {
+              'operationsToExecute': ['updateLabelAlreadyPrinted'],
+              'dataToDelete': [{ 'COLUMN_TO_UPDATE': 'ARTICLE_LABEL_ALREADY_PRINTED', 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+            }
           }
         }
       } else { // THE LABEL HAS A COUNTER
@@ -298,27 +315,67 @@ export default {
         // IF THE ARTICLE LABELS WHERE ALREADY PRINTED, THEN THIS RECORD SHOULD BE DELETED
         if (labelBeingPrinted === 'box') {
           if (articleLabelAlreadyPrinted === 'true') {
-            operationsToExecute = ['/deleteLabelsToPrint']
-            dataToDelete = [{ 'UNIQUE_ID': uniqueId, 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+            // operationsToExecute = ['/deleteLabelsToPrint']
+            // dataToDelete = [{ 'UNIQUE_ID': uniqueId, 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+            this.operations_to_execute_after_print = {
+              'operationsToExecute': ['deleteLabelsToPrint'],
+              'dataToDelete': [{ 'UNIQUE_ID': uniqueId, 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+            }
           } else {
-            operationsToExecute = ['/updateLabelAlreadyPrinted']
-            dataToDelete = [{ 'COLUMN_TO_UPDATE': 'BOX_LABEL_ALREADY_PRINTED', 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+            // operationsToExecute = ['/updateLabelAlreadyPrinted']
+            // dataToDelete = [{ 'COLUMN_TO_UPDATE': 'BOX_LABEL_ALREADY_PRINTED', 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+            this.operations_to_execute_after_print = {
+              'operationsToExecute': ['updateLabelAlreadyPrinted'],
+              'dataToDelete': [{ 'COLUMN_TO_UPDATE': 'BOX_LABEL_ALREADY_PRINTED', 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+            }
           }
         }
 
         if (labelBeingPrinted === 'article') {
           // IF THE BOX LABELS WHERE ALREADY PRINTED, THEN THIS RECORD SHOULD BE DELETED
           if (boxLabelAlreadyPrinted === 'true') {
-            operationsToExecute = ['/deleteLabelsToPrint']
-            dataToDelete = [{ 'UNIQUE_ID': uniqueId, 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+            // operationsToExecute = ['/deleteLabelsToPrint']
+            // dataToDelete = [{ 'UNIQUE_ID': uniqueId, 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+            this.operations_to_execute_after_print = {
+              'operationsToExecute': ['deleteLabelsToPrint'],
+              'dataToDelete': [{ 'UNIQUE_ID': uniqueId, 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+            }
           } else {
-            operationsToExecute = ['/updateLabelAlreadyPrinted']
-            dataToDelete = [{ 'COLUMN_TO_UPDATE': 'ARTICLE_LABEL_ALREADY_PRINTED', 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+            // operationsToExecute = ['/updateLabelAlreadyPrinted']
+            // dataToDelete = [{ 'COLUMN_TO_UPDATE': 'ARTICLE_LABEL_ALREADY_PRINTED', 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+            this.operations_to_execute_after_print = {
+              'operationsToExecute': ['updateLabelAlreadyPrinted'],
+              'dataToDelete': [{ 'COLUMN_TO_UPDATE': 'ARTICLE_LABEL_ALREADY_PRINTED', 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+            }
           }
         }
       }
 
     // END OF THE PRINT
+    },
+    async executeLabelsPostOperations () {
+      let operationsAndData = this.operations_to_execute_after_print
+      console.log('operationsToExecute: ' + JSON.stringify(operationsAndData))
+      console.log('operationsToExecute: ' + operationsAndData.operationsToExecute)
+      console.log('dataToDelete: ' + JSON.stringify(operationsAndData.dataToDelete[0]))
+      let urlParameters = Object.entries(operationsAndData.dataToDelete[0]).map(e => e.join('=')).join('&');
+      await axios.post(sitebase+operationsAndData.operationsToExecute,
+        urlParameters,
+        {headers:
+          {'Content-type': 'application/x-www-form-urlencoded'}
+        }
+      ).then(
+        r => {
+          console.log('r: ', r)
+          if (r.status === 200) {
+            console.log('success')
+            this.$router.go(0) // Refresh the page
+          } else {
+            alert(r.errorText)
+          }
+        }
+      )
+      this.$refs['modal-paint-2'].hide()
     },
     replaceAll (str, map) {
       for (let key in map) {
@@ -868,6 +925,13 @@ a.search-toggle {
     padding: 10px 0px;
     position: absolute;
     cursor:pointer;
+}
+
+.flex-right{
+    justify-content: flex-end;
+    display: flex;
+    padding-right:30px;
+    padding-left: 0px !important;
 }
 
 </style>
