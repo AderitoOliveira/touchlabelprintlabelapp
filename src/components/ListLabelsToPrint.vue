@@ -1,6 +1,14 @@
 <template>
   <div id="order">
     <div class="container">
+      <loading :active.sync="isLoading" 
+        :can-cancel="true"
+        :color="color_loading"
+        :loader="loader_loading"
+        :background-color="background_loading"
+        :opacity="opacity_loading"
+        :is-full-page="fullPage">
+      </loading>
       <div class="outer-wrap">
         <div class="row">
           <div class="col-md-12">
@@ -53,7 +61,6 @@
                     <li class="order-item-detail col-md-2"><div class="item-inner">{{label.PRODUCT_NAME}}</div></li>
                     <li class="order-item-detail col-md-2"><div class="item-inner">{{label.QTY_LABELS_TO_PRINT_ARTICLE}} / <strong>{{label.QTY_LABELS_TO_PRINT_BOX}}</strong></div></li>
                     <div class="col-md-3 table-item item-actions flex-right">
-                        <!-- <a class="btn btn-black" v-if="true" @click="launchModal('close_for_paint')" data-toggle="tooltip"> -->
                           <a class="btn btn-black" v-if="label.ARTICLE_LABEL_ALREADY_PRINTED === 'false'" @click="printLabelArticle(label.UNIQUE_ID, label.CUSTOMER_PRODUCT_ID, label.ORDER_ID, label.QTY_LABELS_TO_PRINT_ARTICLE, label.BOX_LABEL_ALREADY_PRINTED)" data-toggle="tooltip">
                             <img src="../assets/icons/vase-btn.svg" width="20px" height="18px" />Imprimir Artigo
                         </a>
@@ -107,6 +114,10 @@
 <script>
 import axios from 'axios'
 // import { request } from 'http'
+// Import component
+import Loading from 'vue-loading-overlay'
+// Import stylesheet
+import 'vue-loading-overlay/dist/vue-loading.css'
 
 let sitebase
 
@@ -126,6 +137,12 @@ export default {
       labelsToPrint: '',
       search: '',
       'showSearch': false,
+      isLoading: false,
+      fullPage: true,
+      color_loading: '#006400',
+      loader_loading: 'bars',
+      background_loading: '#b2b2b2',
+      opacity_loading: 0.8,
       modal_action: true,
       actiontype: '',
       modal_trigger: '',
@@ -141,6 +158,9 @@ export default {
       },
       labelToPrintDetail: ''
     }
+  },
+  components: {
+    Loading
   },
   mounted () {
     axios({ method: 'GET', 'url': sitebase + getLabels }).then(result => {
@@ -203,6 +223,8 @@ export default {
       console.log('Inside executeCycleToPrintLabels')
       console.log('totalLabelsToPrint: ' + totalLabelsToPrint)
 
+      this.isLoading = true
+
       for (let i = 1; i <= totalLabelsToPrint; i++) {
         let counterValueTestLabel = this.padDigits(i, digitsForPadding) + ''
 
@@ -217,7 +239,13 @@ export default {
         console.log('*******************************************************************************************')
 
         await this.timer(4000) // then the created Promise can be awaited
+
+        if (i === totalLabelsToPrint) {
+          this.isLoading = false
+          this.$refs['modal-paint-2'].show()
+        }
       }
+
     },
     async launchSecondModal () {
       this.$refs['modal-paint'].hide()
@@ -240,11 +268,6 @@ export default {
       let totalLabelsToPrint = this.first_modal_action_object.totalLabelsToPrint
       let quantityArticleLabels = this.first_modal_action_object.quantityArticleLabels
 
-      let operationsToExecute = []
-      let dataToDelete = []
-
-      // console.log('labelHasCounter: ' + labelHasCounter)
-
       if (this.actiontype === 'article_label') {
         this.modal = {
           title: 'Imprimir Etiquetas',
@@ -258,7 +281,7 @@ export default {
           ok_button: 'Sim'
         }
       }
-      this.$refs['modal-paint-2'].show()
+      // this.$refs['modal-paint-2'].show()
 
       // START OF THE PRINT
 
@@ -358,8 +381,8 @@ export default {
       console.log('operationsToExecute: ' + JSON.stringify(operationsAndData))
       console.log('operationsToExecute: ' + operationsAndData.operationsToExecute)
       console.log('dataToDelete: ' + JSON.stringify(operationsAndData.dataToDelete[0]))
-      let urlParameters = Object.entries(operationsAndData.dataToDelete[0]).map(e => e.join('=')).join('&');
-      await axios.post(sitebase+operationsAndData.operationsToExecute,
+      let urlParameters = Object.entries(operationsAndData.dataToDelete[0]).map(e => e.join('=')).join('&')
+      await axios.post(sitebase + operationsAndData.operationsToExecute,
         urlParameters,
         {headers:
           {'Content-type': 'application/x-www-form-urlencoded'}
