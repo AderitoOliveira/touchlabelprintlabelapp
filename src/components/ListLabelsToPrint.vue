@@ -716,7 +716,8 @@ export default {
           'boxLabelAlreadyPrinted': 'false',
           'labelHasCounter': labelHasCounter,
           'totalLabelsToPrint': quantityBoxLabels,
-          'quantityArticleLabels': quantityBoxLabels
+          'quantityArticleLabels': quantityBoxLabels,
+          'quantity_box_labels': quantityBoxLabels
         }
 
         this.launchModal('box_label')
