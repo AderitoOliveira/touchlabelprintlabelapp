@@ -123,6 +123,7 @@ let sitebase
 
 if (process.env.NODE_ENV === 'development') {
   sitebase = 'http://localhost:8080/'
+  // sitebase = 'http://192.168.1.10:8080/'
 } else {
   sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/'
 }
@@ -268,7 +269,7 @@ export default {
       let totalLabelsToPrint = this.first_modal_action_object.totalLabelsToPrint
       let quantityArticleLabels = this.first_modal_action_object.quantityArticleLabels
 
-      if (this.actiontype === 'article_label') {
+      if (this.actiontype === 'article') {
         this.modal = {
           title: 'Imprimir Etiquetas',
           content: 'As etiquetas de Artigo foram impressas com sucesso?',
@@ -286,10 +287,13 @@ export default {
       // START OF THE PRINT
 
       console.log('labelHasCounter: ' + labelHasCounter)
+      console.log('this.actiontype: ' + this.actiontype)
+      console.log('labelBeingPrinted: ' + labelBeingPrinted)
 
-      if (labelHasCounter === 'false' || (labelHasCounter === 'true' && this.actiontype === 'article_label')) {
+      if (labelHasCounter === 'false' || (labelHasCounter === 'true' && this.actiontype === 'article')) {
         this.sendZplToPrinter(printerIPAddress, printerPort, zplString)
 
+        console.log('this.actiontype: ' + this.actiontype)
         // IF THE ARTICLE LABELS WHERE ALREADY PRINTED, THEN THIS RECORD SHOULD BE DELETED
         if (labelBeingPrinted === 'box') {
           if (articleLabelAlreadyPrinted === 'true') {
@@ -306,9 +310,12 @@ export default {
               'operationsToExecute': ['updateLabelAlreadyPrinted'],
               'dataToDelete': [{ 'COLUMN_TO_UPDATE': 'BOX_LABEL_ALREADY_PRINTED', 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
             }
+            console.log('this.operations_to_execute_after_print: ' + JSON.stringify(this.operations_to_execute_after_print))
           }
         }
 
+        console.log('labelBeingPrinted: ' + labelBeingPrinted)
+        console.log('boxLabelAlreadyPrinted: ' + boxLabelAlreadyPrinted)
         if (labelBeingPrinted === 'article') {
           // IF THE BOX LABELS WHERE ALREADY PRINTED, THEN THIS RECORD SHOULD BE DELETED
           if (boxLabelAlreadyPrinted === 'true') {
@@ -318,6 +325,7 @@ export default {
               'operationsToExecute': ['deleteLabelsToPrint'],
               'dataToDelete': [{ 'UNIQUE_ID': uniqueId, 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
             }
+            console.log('this.operations_to_execute_after_print: ' + JSON.stringify(this.operations_to_execute_after_print))
           } else {
             // operationsToExecute = ['/updateLabelAlreadyPrinted']
             // dataToDelete = [{ 'COLUMN_TO_UPDATE': 'ARTICLE_LABEL_ALREADY_PRINTED', 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
@@ -325,8 +333,10 @@ export default {
               'operationsToExecute': ['updateLabelAlreadyPrinted'],
               'dataToDelete': [{ 'COLUMN_TO_UPDATE': 'ARTICLE_LABEL_ALREADY_PRINTED', 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
             }
+            console.log('this.operations_to_execute_after_print: ' + JSON.stringify(this.operations_to_execute_after_print))
           }
         }
+        this.$refs['modal-paint-2'].show()
       } else { // THE LABEL HAS A COUNTER
         let digitsForPadding = totalLabelsToPrint.toString().length
 
@@ -377,6 +387,7 @@ export default {
     // END OF THE PRINT
     },
     async executeLabelsPostOperations () {
+      console.log('Inside executeLabelsPostOperations')
       let operationsAndData = this.operations_to_execute_after_print
       console.log('operationsToExecute: ' + JSON.stringify(operationsAndData))
       console.log('operationsToExecute: ' + operationsAndData.operationsToExecute)
@@ -580,7 +591,7 @@ export default {
         'quantityArticleLabels': quantityArticleLabels
       }
 
-      this.launchModal('article_label')
+      this.launchModal('article')
 
       // this.first_modal_action_object = {}
     },
@@ -720,7 +731,7 @@ export default {
           'quantity_box_labels': quantityBoxLabels
         }
 
-        this.launchModal('box_label')
+        this.launchModal('box')
       } else { // THE LABEL HAS A COUNTER
         // We need to remove the first digit to calculate the checksum for the EAN-13
         if (barCodeNumber.charAt(0) === '0') {
@@ -792,7 +803,7 @@ export default {
           'quantityArticleLabels': quantityBoxLabels
         }
 
-        this.launchModal('box_label')
+        this.launchModal('box')
       }
     }
   }
