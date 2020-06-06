@@ -1,7 +1,7 @@
 <template>
   <div id="order">
     <div class="container">
-      <loading :active.sync="isLoading" 
+      <loading :active.sync="isLoading"
         :can-cancel="true"
         :color="color_loading"
         :loader="loader_loading"
@@ -15,12 +15,15 @@
               <ul id="table-header">
                 <div class="row">
                   <li class="table-header-item col-md-1">
+                    <div class="inner-label">Foto</div>
+                  </li>
+                  <li class="table-header-item col-md-1">
                     <div class="inner-label">Encomenda</div>
                   </li>
                   <li class="table-header-item col-md-2">
                     <div class="inner-label">Ref. Cliente</div>
                   </li>
-                  <li class="table-header-item col-md-2">
+                  <li class="table-header-item col-md-1">
                     <div class="inner-label">Ref. Interna</div>
                   </li>
                   <li class="table-header-item col-md-2">
@@ -32,20 +35,8 @@
                   <li class="table-header-item col-md-3">
                       <div class="inner-label"></div>
                   </li>
-                  <!--li class="table-header-item col-md-1">
-                    <a class="search-toggle" @click="toggleSearch()">
-                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14V14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z" fill="#28a745"/>
-                      </svg>
-                    </a>
-                  </li-->
                 </div>
               </ul>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <div v-if="showSearch" class="search-wrap"><input type="text" class="form-control" v-model="search" placeholder="Pesquise pelo número da encomenda..."></div>
           </div>
         </div>
         <div class="row">
@@ -55,9 +46,13 @@
                 <li class="order-item col-md-12" v-for="label in labelsToPrint" :key="label.CUSTOMER_PRODUCT_ID">
                 <!--a v-if=" order.STATUS != 'Fechada'" class="order-link" v-bind:href="'#/order/'+order.ORDER_ID"-->
                   <ul class="order-item-list row">
+                    <li class="order-item-detail col-md-1">
+                      <div class="item-inner"><img :src="image_base + label.IMAGE" class="img-product img-rounded" height="50" width="50"/>
+                      </div>
+                    </li>
                     <li class="order-item-detail col-md-1"><div class="item-inner"><strong>{{label.ORDER_ID}}</strong></div></li>
                     <li class="order-item-detail col-md-2"><div class="item-inner">{{label.CUSTOMER_PRODUCT_ID}}</div></li>
-                    <li class="order-item-detail col-md-2"><div class="item-inner">{{label.INTERNAL_PRODUCT_ID}}</div></li>
+                    <li class="order-item-detail col-md-1"><div class="item-inner">{{label.INTERNAL_PRODUCT_ID}}</div></li>
                     <li class="order-item-detail col-md-2"><div class="item-inner">{{label.PRODUCT_NAME}}</div></li>
                     <li class="order-item-detail col-md-2"><div class="item-inner">{{label.QTY_LABELS_TO_PRINT_ARTICLE}} / <strong>{{label.QTY_LABELS_TO_PRINT_BOX}}</strong></div></li>
                     <div class="col-md-3 table-item item-actions flex-right">
@@ -122,8 +117,8 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 let sitebase
 
 if (process.env.NODE_ENV === 'development') {
-  sitebase = 'http://localhost:8080/'
-  // sitebase = 'http://192.168.1.10:8080/'
+  // sitebase = 'http://localhost:8080/'
+  sitebase = 'http://192.168.1.10:8080/'
 } else {
   sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/'
 }
@@ -136,8 +131,7 @@ export default {
     return {
       icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAIISURBVHgB7VfLccJADJUJd0gHBhogHUAJqQB3EK45YSogVBDoIB3gDuIGIL7mhCvAeQ9kxqzXH8iMM5Phzeyw2ZX0JK0kgjMYDCZJkryJSFeaQeQ4ju/0+/0v/OFKs4jbKelut3OkASDQBB/dlvwR7sSNoX2NsOu6bLkht61Wy9Xj+HA4hFEUBXIFahGDkEQv2Hpi6XfcsVpjbD/gxBxORFU2K1MNgwsYZq9PpXzI8M6jLHRmcisxo+z1ep9KeAamXICoxliP7H3ucbY21H3q0kaRfUcb+mKA8C3hOUlNxTnkfJsh2OH5zHAyxBoj83FG7shnjRikCwvpKiVlKrH2uhbquM9sZBUwk4dqK89hHiBaT05FdAGkdK2kNOTL6U25photI5znKcSDzVElsVZvDpl28SzXqU5o00Xks0pieB3blLWHS5F9SwP5FrQQz+26x8FBLC13a3VuZFNEFpeVxEyppT3O6dICo6FYFyt9qgQTyWO13W5XOXtF7QSiDavSkPchZ82IDg3fOI5QlE+124mCiPqZfWgSQ/E9TSkd5B7DYmOSUpfDpejdrREbkfhiDIYaWKbpt9grjjgLvik87+m7xyWivFtStog0i1rfTvpt43HP1KKI+PbHFgER77jCkna6jdhwIsBHIL/E/X+u/0/MPt5Lc7+bUkQPnU7nW0djU+Qx+F5/ADN8+ahyQQG5AAAAAElFTkSuQmCC',
       labelsToPrint: '',
-      search: '',
-      'showSearch': false,
+      image_base: 'http://192.168.1.10:8080/',
       isLoading: false,
       fullPage: true,
       color_loading: '#006400',
@@ -182,14 +176,6 @@ export default {
     }
   },
   methods: {
-    toggleSearch () {
-      if (this.showSearch === true) {
-        this.showSearch = false
-        this.search = ''
-      } else {
-        this.showSearch = true
-      }
-    },
     padDigits (number, digits) {
       return Array(Math.max(digits - String(number).length + 1, 0)).join(0) + number
     },
@@ -200,7 +186,7 @@ export default {
       this.actiontype = actiontype
 
       console.log('actiontype ' + actiontype)
-      if (actiontype === 'article_label') {
+      if (actiontype === 'article') {
         this.modal = {
           title: 'Imprimir Etiquetas',
           content: 'A etiqueta de teste foi impressa com sucesso ?' + '\n\n Pretende imprimir as ' + this.first_modal_action_object.quantityArticleLabels + ' etiquetas do artigo?',
@@ -292,6 +278,12 @@ export default {
 
       if (labelHasCounter === 'false' || (labelHasCounter === 'true' && this.actiontype === 'article')) {
         this.sendZplToPrinter(printerIPAddress, printerPort, zplString)
+        this.isLoading = true
+        let timeToWait = totalLabelsToPrint * 0.6 * 1000
+        console.log('Labels To Print: ' + totalLabelsToPrint)
+        console.log('timeToWait: ' + timeToWait)
+        await this.timer(timeToWait)
+        this.isLoading = false
 
         console.log('this.actiontype: ' + this.actiontype)
         // IF THE ARTICLE LABELS WHERE ALREADY PRINTED, THEN THIS RECORD SHOULD BE DELETED
@@ -593,7 +585,6 @@ export default {
 
       this.launchModal('article')
 
-      // this.first_modal_action_object = {}
     },
     async printBoxLabels (uniqueId, customerProductId, orderId, quantityBoxLabels, articleLabelAlreadyPrinted) {
       let labelToPrintDetails = await this.getLabelToPrintDetails(customerProductId)
@@ -800,7 +791,8 @@ export default {
           'boxLabelAlreadyPrinted': 'false',
           'labelHasCounter': labelHasCounter,
           'totalLabelsToPrint': quantityBoxLabels,
-          'quantityArticleLabels': quantityBoxLabels
+          'quantityArticleLabels': quantityBoxLabels,
+          'quantity_box_labels': quantityBoxLabels
         }
 
         this.launchModal('box')
