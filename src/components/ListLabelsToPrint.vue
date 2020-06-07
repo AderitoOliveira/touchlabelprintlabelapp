@@ -47,7 +47,8 @@
                 <!--a v-if=" order.STATUS != 'Fechada'" class="order-link" v-bind:href="'#/order/'+order.ORDER_ID"-->
                   <ul class="order-item-list row">
                     <li class="order-item-detail col-md-1">
-                      <div class="item-inner"><img :src="image_base + label.IMAGE" class="img-product img-rounded" height="50" width="50"/>
+                      <!-- <div class="item-inner"><img :src="image_base + label.IMAGE" class="img-product img-rounded" height="50" width="50"/> -->
+                      <div class="item-inner"><img :src="image_base + label.IMAGE" @click="launchImageModal(image_base, label.IMAGE)" height="50" width="50"/>
                       </div>
                     </li>
                     <li class="order-item-detail col-md-1"><div class="item-inner"><strong>{{label.ORDER_ID}}</strong></div></li>
@@ -103,6 +104,17 @@
     >
       <p class="my-4">{{modal.content}}</p>
     </b-modal>
+    <b-modal
+      ref="image-modal"
+      size="lg"
+      :modal-class="centermodal"
+      :hide-footer="hide_footer"
+    >
+      <div class="item-inner">
+        <!-- <img :src="imageSrc"/> -->
+        <b-img :src="imageSrc" fluid alt="Responsive image"></b-img>
+      </div>
+    </b-modal>
   </div>
 </template>
 
@@ -131,7 +143,7 @@ export default {
     return {
       icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAIISURBVHgB7VfLccJADJUJd0gHBhogHUAJqQB3EK45YSogVBDoIB3gDuIGIL7mhCvAeQ9kxqzXH8iMM5Phzeyw2ZX0JK0kgjMYDCZJkryJSFeaQeQ4ju/0+/0v/OFKs4jbKelut3OkASDQBB/dlvwR7sSNoX2NsOu6bLkht61Wy9Xj+HA4hFEUBXIFahGDkEQv2Hpi6XfcsVpjbD/gxBxORFU2K1MNgwsYZq9PpXzI8M6jLHRmcisxo+z1ep9KeAamXICoxliP7H3ucbY21H3q0kaRfUcb+mKA8C3hOUlNxTnkfJsh2OH5zHAyxBoj83FG7shnjRikCwvpKiVlKrH2uhbquM9sZBUwk4dqK89hHiBaT05FdAGkdK2kNOTL6U25photI5znKcSDzVElsVZvDpl28SzXqU5o00Xks0pieB3blLWHS5F9SwP5FrQQz+26x8FBLC13a3VuZFNEFpeVxEyppT3O6dICo6FYFyt9qgQTyWO13W5XOXtF7QSiDavSkPchZ82IDg3fOI5QlE+124mCiPqZfWgSQ/E9TSkd5B7DYmOSUpfDpejdrREbkfhiDIYaWKbpt9grjjgLvik87+m7xyWivFtStog0i1rfTvpt43HP1KKI+PbHFgER77jCkna6jdhwIsBHIL/E/X+u/0/MPt5Lc7+bUkQPnU7nW0djU+Qx+F5/ADN8+ahyQQG5AAAAAElFTkSuQmCC',
       labelsToPrint: '',
-      image_base: 'http://192.168.1.10:8080/',
+      image_base: 'http://192.168.1.10:8080',
       isLoading: false,
       fullPage: true,
       color_loading: '#006400',
@@ -151,7 +163,10 @@ export default {
         ok_button: 'Fazer coisas',
         cancelTitle: 'Cancelar'
       },
-      labelToPrintDetail: ''
+      labelToPrintDetail: '',
+      imageSrc: '',
+      hide_footer: true
+
     }
   },
   components: {
@@ -797,6 +812,10 @@ export default {
 
         this.launchModal('box')
       }
+    },
+    launchImageModal (imageSiteBase, imageName) {
+      this.imageSrc = imageSiteBase + imageName
+      this.$refs['image-modal'].show()
     }
   }
 }
