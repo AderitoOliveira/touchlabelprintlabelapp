@@ -9,6 +9,11 @@
         :opacity="opacity_loading"
         :is-full-page="fullPage">
       </loading>
+      <div class="simple-spinner-full-page" v-if="loadSimpleSpinner">
+        <div class="simple-spinner-center">
+          <vue-simple-spinner size="massive" line-fg-color="#009900" text-fg-color="#5ed2a8" :message="loadSimpleSpinnerMessage"></vue-simple-spinner>
+        </div>
+      </div>
       <div class="outer-wrap">
         <div class="row">
           <div class="col-md-12">
@@ -58,6 +63,7 @@
                     <li class="order-item-detail col-md-2"><div class="item-inner">{{label.QTY_LABELS_TO_PRINT_ARTICLE}} / <strong>{{label.QTY_LABELS_TO_PRINT_BOX}}</strong></div></li>
                     <div class="col-md-3 table-item item-actions flex-right">
                           <a class="btn btn-black" v-if="label.ARTICLE_LABEL_ALREADY_PRINTED === 'false'" @click="printLabelArticle(label.UNIQUE_ID, label.CUSTOMER_PRODUCT_ID, label.ORDER_ID, label.QTY_LABELS_TO_PRINT_ARTICLE, label.BOX_LABEL_ALREADY_PRINTED)" data-toggle="tooltip">
+                          <!-- <a class="btn btn-black" v-if="label.ARTICLE_LABEL_ALREADY_PRINTED === 'false'" @click="launchOverlay()" data-toggle="tooltip"> -->
                             <img src="../assets/icons/vase-btn.svg" width="20px" height="18px" />Imprimir Artigo
                         </a>
                         <a class="btn btn-black btn-outline" v-if="label.BOX_LABEL_ALREADY_PRINTED === 'false'"   @click="printBoxLabels(label.UNIQUE_ID, label.CUSTOMER_PRODUCT_ID, label.ORDER_ID, label.QTY_LABELS_TO_PRINT_BOX, label.ARTICLE_LABEL_ALREADY_PRINTED)" data-toggle="tooltip" title="Imprimir Etiquetas Caixa">
@@ -126,6 +132,8 @@ import Loading from 'vue-loading-overlay'
 // Import stylesheet
 import 'vue-loading-overlay/dist/vue-loading.css'
 
+import Spinner from 'vue-simple-spinner'
+
 let sitebase
 
 if (process.env.NODE_ENV === 'development') {
@@ -165,12 +173,15 @@ export default {
       },
       labelToPrintDetail: '',
       imageSrc: '',
-      hide_footer: true
+      hide_footer: true,
+      loadSimpleSpinner: false,
+      loadSimpleSpinnerMessage: ''
 
     }
   },
   components: {
-    Loading
+    Loading,
+    'vue-simple-spinner': Spinner
   },
   mounted () {
     axios({ method: 'GET', 'url': sitebase + getLabels }).then(result => {
@@ -191,6 +202,23 @@ export default {
     }
   },
   methods: {
+    launchOverlay () {
+      this.isLoading = true
+    },
+    async launchSpinner (secondsToWait) {
+      this.loadSimpleSpinner = true
+      let secondsRemaining = secondsToWait
+      this.loadSimpleSpinnerMessage = 'Faltam ' + secondsRemaining + ' segundos para terminar a impressão'
+
+      for (let i = 0; i < secondsToWait; i++) {
+        await this.timer(1000)
+        secondsRemaining = secondsRemaining - 1
+        console.log(secondsRemaining)
+        this.loadSimpleSpinnerMessage = 'Faltam ' + secondsRemaining + ' segundos para terminar a impressão'
+      }
+
+      this.loadSimpleSpinner = false
+    },
     padDigits (number, digits) {
       return Array(Math.max(digits - String(number).length + 1, 0)).join(0) + number
     },
@@ -225,7 +253,10 @@ export default {
       console.log('Inside executeCycleToPrintLabels')
       console.log('totalLabelsToPrint: ' + totalLabelsToPrint)
 
-      this.isLoading = true
+      // this.isLoading = true
+      this.loadSimpleSpinner = true
+      let timeToWait = totalLabelsToPrint * 2
+      this.loadSimpleSpinnerMessage = 'Faltam ' + timeToWait + ' segundos para terminar a impressão'
 
       for (let i = 1; i <= totalLabelsToPrint; i++) {
         let counterValueTestLabel = this.padDigits(i, digitsForPadding) + ''
@@ -240,14 +271,17 @@ export default {
         console.log('ZPL_FINAL:' + sendToPrinterAllLabels)
         console.log('*******************************************************************************************')
 
-        await this.timer(4000) // then the created Promise can be awaited
+        await this.timer(2000) // then the created Promise can be awaited
+
+        timeToWait = timeToWait - 2
+        this.loadSimpleSpinnerMessage = 'Faltam ' + timeToWait + ' segundos para terminar a impressão'
 
         if (i === totalLabelsToPrint) {
-          this.isLoading = false
+          // this.isLoading = false
+          this.loadSimpleSpinner = false
           this.$refs['modal-paint-2'].show()
         }
       }
-
     },
     async launchSecondModal () {
       this.$refs['modal-paint'].hide()
@@ -293,12 +327,13 @@ export default {
 
       if (labelHasCounter === 'false' || (labelHasCounter === 'true' && this.actiontype === 'article')) {
         this.sendZplToPrinter(printerIPAddress, printerPort, zplString)
-        this.isLoading = true
-        let timeToWait = totalLabelsToPrint * 0.6 * 1000
+        // this.isLoading = true
+        let timeToWait = totalLabelsToPrint * 0.6 * 1
         console.log('Labels To Print: ' + totalLabelsToPrint)
         console.log('timeToWait: ' + timeToWait)
-        await this.timer(timeToWait)
-        this.isLoading = false
+        await this.launchSpinner(timeToWait.toFixed())
+        // await this.timer(timeToWait)
+        // this.isLoading = false
 
         console.log('this.actiontype: ' + this.actiontype)
         // IF THE ARTICLE LABELS WHERE ALREADY PRINTED, THEN THIS RECORD SHOULD BE DELETED
@@ -978,6 +1013,33 @@ a.search-toggle {
     display: flex;
     padding-right:30px;
     padding-left: 0px !important;
+}
+
+.simple-spinner-full-page {
+  z-index: 9999;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  background: #1f1e28;
+  opacity: 0.8;
+}
+
+.simple-spinner-background {
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  background: #1f1e28;
+  opacity: 0.8;
+}
+
+.simple-spinner-center {
+  position: absolute;
+  top: 40%;
+  left: 30%;
 }
 
 </style>
