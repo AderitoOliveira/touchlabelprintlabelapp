@@ -135,12 +135,14 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 import Spinner from 'vue-simple-spinner'
 
 let sitebase
+let imageBase
 
 if (process.env.NODE_ENV === 'development') {
-  // sitebase = 'http://localhost:8080/'
-  sitebase = 'http://192.168.1.10:8080/'
+  sitebase = 'http://192.168.1.15:8080/',
+  imageBase = 'http://192.168.1.15:8080'
 } else {
-  sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/'
+  sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
+  imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com'
 }
 
 const getLabels = 'getLabelsToPrint'
@@ -151,7 +153,7 @@ export default {
     return {
       icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAIISURBVHgB7VfLccJADJUJd0gHBhogHUAJqQB3EK45YSogVBDoIB3gDuIGIL7mhCvAeQ9kxqzXH8iMM5Phzeyw2ZX0JK0kgjMYDCZJkryJSFeaQeQ4ju/0+/0v/OFKs4jbKelut3OkASDQBB/dlvwR7sSNoX2NsOu6bLkht61Wy9Xj+HA4hFEUBXIFahGDkEQv2Hpi6XfcsVpjbD/gxBxORFU2K1MNgwsYZq9PpXzI8M6jLHRmcisxo+z1ep9KeAamXICoxliP7H3ucbY21H3q0kaRfUcb+mKA8C3hOUlNxTnkfJsh2OH5zHAyxBoj83FG7shnjRikCwvpKiVlKrH2uhbquM9sZBUwk4dqK89hHiBaT05FdAGkdK2kNOTL6U25photI5znKcSDzVElsVZvDpl28SzXqU5o00Xks0pieB3blLWHS5F9SwP5FrQQz+26x8FBLC13a3VuZFNEFpeVxEyppT3O6dICo6FYFyt9qgQTyWO13W5XOXtF7QSiDavSkPchZ82IDg3fOI5QlE+124mCiPqZfWgSQ/E9TSkd5B7DYmOSUpfDpejdrREbkfhiDIYaWKbpt9grjjgLvik87+m7xyWivFtStog0i1rfTvpt43HP1KKI+PbHFgER77jCkna6jdhwIsBHIL/E/X+u/0/MPt5Lc7+bUkQPnU7nW0djU+Qx+F5/ADN8+ahyQQG5AAAAAElFTkSuQmCC',
       labelsToPrint: '',
-      image_base: 'http://192.168.1.10:8080',
+      image_base: imageBase,
       isLoading: false,
       fullPage: true,
       color_loading: '#006400',
@@ -203,7 +205,7 @@ export default {
   },
   methods: {
     launchOverlay () {
-      this.isLoading = true
+      // this.isLoading = true
     },
     async launchSpinner (secondsToWait) {
       this.loadSimpleSpinner = true
@@ -254,9 +256,9 @@ export default {
       console.log('totalLabelsToPrint: ' + totalLabelsToPrint)
 
       // this.isLoading = true
-      this.loadSimpleSpinner = true
+      // this.loadSimpleSpinner = true
       let timeToWait = totalLabelsToPrint * 2
-      this.loadSimpleSpinnerMessage = 'Faltam ' + timeToWait + ' segundos para terminar a impressão'
+      // this.loadSimpleSpinnerMessage = 'Faltam ' + timeToWait + ' segundos para terminar a impressão'
 
       for (let i = 1; i <= totalLabelsToPrint; i++) {
         let counterValueTestLabel = this.padDigits(i, digitsForPadding) + ''
@@ -271,17 +273,20 @@ export default {
         console.log('ZPL_FINAL:' + sendToPrinterAllLabels)
         console.log('*******************************************************************************************')
 
-        await this.timer(2000) // then the created Promise can be awaited
+        //await this.timer(2000) // then the created Promise can be awaited // COMMENTED FOR REMOVING SPPINNER
 
         timeToWait = timeToWait - 2
-        this.loadSimpleSpinnerMessage = 'Faltam ' + timeToWait + ' segundos para terminar a impressão'
+        // this.loadSimpleSpinnerMessage = 'Faltam ' + timeToWait + ' segundos para terminar a impressão'
+
 
         if (i === totalLabelsToPrint) {
           // this.isLoading = false
-          this.loadSimpleSpinner = false
-          this.$refs['modal-paint-2'].show()
+          // this.loadSimpleSpinner = false
+          // this.$refs['modal-paint-2'].show()
         }
       }
+
+      this.$refs['modal-paint-2'].show() // ADDED FOR REMOVING SPPINNER
     },
     async launchSecondModal () {
       this.$refs['modal-paint'].hide()
@@ -331,7 +336,7 @@ export default {
         let timeToWait = totalLabelsToPrint * 0.6 * 1
         console.log('Labels To Print: ' + totalLabelsToPrint)
         console.log('timeToWait: ' + timeToWait)
-        await this.launchSpinner(timeToWait.toFixed())
+        // await this.launchSpinner(timeToWait.toFixed())
         // await this.timer(timeToWait)
         // this.isLoading = false
 
