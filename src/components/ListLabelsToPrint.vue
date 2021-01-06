@@ -350,7 +350,7 @@ export default {
             // dataToDelete = [{ 'COLUMN_TO_UPDATE': 'BOX_LABEL_ALREADY_PRINTED', 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
             this.operations_to_execute_after_print = {
               'operationsToExecute': ['updateLabelAlreadyPrinted'],
-              'dataToDelete': [{ 'COLUMN_TO_UPDATE': 'BOX_LABEL_ALREADY_PRINTED', 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+              'dataToDelete': [{ 'COLUMN_TO_UPDATE': 'BOX_LABEL_ALREADY_PRINTED', 'UNIQUE_ID': uniqueId, 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
             }
             console.log('this.operations_to_execute_after_print: ' + JSON.stringify(this.operations_to_execute_after_print))
           }
@@ -373,7 +373,7 @@ export default {
             // dataToDelete = [{ 'COLUMN_TO_UPDATE': 'ARTICLE_LABEL_ALREADY_PRINTED', 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
             this.operations_to_execute_after_print = {
               'operationsToExecute': ['updateLabelAlreadyPrinted'],
-              'dataToDelete': [{ 'COLUMN_TO_UPDATE': 'ARTICLE_LABEL_ALREADY_PRINTED', 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+              'dataToDelete': [{ 'COLUMN_TO_UPDATE': 'ARTICLE_LABEL_ALREADY_PRINTED', 'UNIQUE_ID': uniqueId, 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
             }
             console.log('this.operations_to_execute_after_print: ' + JSON.stringify(this.operations_to_execute_after_print))
           }
@@ -401,7 +401,7 @@ export default {
             // dataToDelete = [{ 'COLUMN_TO_UPDATE': 'BOX_LABEL_ALREADY_PRINTED', 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
             this.operations_to_execute_after_print = {
               'operationsToExecute': ['updateLabelAlreadyPrinted'],
-              'dataToDelete': [{ 'COLUMN_TO_UPDATE': 'BOX_LABEL_ALREADY_PRINTED', 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+              'dataToDelete': [{ 'COLUMN_TO_UPDATE': 'BOX_LABEL_ALREADY_PRINTED', 'UNIQUE_ID': uniqueId, 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
             }
           }
         }
@@ -420,7 +420,7 @@ export default {
             // dataToDelete = [{ 'COLUMN_TO_UPDATE': 'ARTICLE_LABEL_ALREADY_PRINTED', 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
             this.operations_to_execute_after_print = {
               'operationsToExecute': ['updateLabelAlreadyPrinted'],
-              'dataToDelete': [{ 'COLUMN_TO_UPDATE': 'ARTICLE_LABEL_ALREADY_PRINTED', 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
+              'dataToDelete': [{ 'COLUMN_TO_UPDATE': 'ARTICLE_LABEL_ALREADY_PRINTED', 'UNIQUE_ID': uniqueId, 'ORDER_ID': orderId, 'CUSTOMER_PRODUCT_ID': customerProductId }]
             }
           }
         }
