@@ -13,6 +13,7 @@
           </defs>
           </svg>
         </a>
+        <button type="button" class="btn btn-lg btn-warning float-right" @click="goToHome()">Pesquisar Produtos</button>
       </div>
     </div>
     <router-view/>
@@ -20,8 +21,16 @@
 </template>
 
 <script>
+
+import VueRouter from 'vue-router'
+
 export default {
-  name: 'TouchLabelPrint'
+  name: 'TouchLabelPrint',
+  methods:{
+   goToHome(){
+     this.$router.push('/xpto'); 
+   }  
+}
 }
 </script>
 

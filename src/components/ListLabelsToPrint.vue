@@ -138,8 +138,8 @@ let sitebase
 let imageBase
 
 if (process.env.NODE_ENV === 'development') {
-  sitebase = 'http://192.168.1.17:8080/',
-  imageBase = 'http://192.168.1.17:8080'
+  sitebase = 'http://192.168.1.5:8080/',
+  imageBase = 'http://192.168.1.5:8080'
 } else {
   sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
   imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com'
@@ -273,7 +273,7 @@ export default {
         console.log('ZPL_FINAL:' + sendToPrinterAllLabels)
         console.log('*******************************************************************************************')
 
-        await this.timer(1500) // then the created Promise can be awaited // COMMENTED FOR REMOVING SPPINNER
+        await this.timer(500) // then the created Promise can be awaited // COMMENTED FOR REMOVING SPPINNER
 
         timeToWait = timeToWait - 2
         // this.loadSimpleSpinnerMessage = 'Faltam ' + timeToWait + ' segundos para terminar a impressão'
