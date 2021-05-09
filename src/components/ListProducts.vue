@@ -37,7 +37,9 @@
         </div>
         <div class="row">
           <div class="col-md-12">
-            <div v-if="showSearch" class="search-wrap"><input type="text" class="form-control" v-model="search" placeholder="Pesquise pelo número da encomenda..."></div>
+            <div v-if="showSearch" class="search-wrap">
+                    <input type="text" class="form-control"  v-on:keyup="updateLen" v-model="search" placeholder="Pesquise pelo número da encomenda...">
+            </div>
           </div>
         </div>
         <!-- div class="row" -->
@@ -102,7 +104,7 @@
                                     </div>
                                     <div class="info-wrapper hover-actions">
                                         <a class="btn btn-card btn-left"
-                                            @click="printLabelProduct(product.CUSTOMER_PRODUCT_ID, product.PRODUCT_NAME)">
+                                            @click="printProductLabel(product.CUSTOMER_PRODUCT_ID, product.PRODUCT_NAME)">
                                             <img src="../assets/icons/card-print.svg" width="30px" height="30px" />
                                         </a>
                                         <!--a class="btn btn-card btn-right"
@@ -129,7 +131,7 @@
 
 <script>
 import axios from 'axios'
-// import { request } from 'http'
+import _ from 'lodash';
 
 let sitebase
 let imageBase
@@ -143,6 +145,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const getProducts = 'firstProducts'
+const searchProduct = 'getProduct/'
 
 export default {
   name: 'ListProducts',
@@ -163,14 +166,24 @@ export default {
     })
   },
   computed: {
-    filterOrders: function () {
+    filterProducts: function () {
       let filtered = this.products
-      if (this.search) {
-        filtered = this.products.filter(
-          o => o.CUSTOMER_PRODUCT_ID.toLowerCase().indexOf(this.search) > -1
-        )
+      let currentSearch = '';
+      if (this.search && this.search != this.currentSearch) {
+          this.currentSearch = this.search;
+        console.log(this.currentSearch);
+        console.log(this.search);
+        //filtered = this.products.filter(
+        //  o => o.CUSTOMER_PRODUCT_ID.toLowerCase().indexOf(this.search) > -1
+        //)
+        axios({ method: 'GET', 'url': sitebase + searchProduct + this.search }).then(result => {
+            this.products = result.data;
+            return this.products;
+            }, error => {
+            console.error(error)
+            })
       }
-      return filtered
+     // return this.products
     }
   },
   methods: {
@@ -181,6 +194,32 @@ export default {
       } else {
         this.showSearch = true
       }
+    },
+    updateLen: _.debounce(
+      function() {
+        this.searchFilterDebounce()
+      }, 800),
+      
+     searchFilterDebounce () {
+         alert(this.search);
+         if(this.search != '') {
+            axios({ method: 'GET', 'url': sitebase + searchProduct + encodeURIComponent(this.search) }).then(result => {
+                this.products = result.data;
+                return this.products;
+                }, error => {
+                console.error(error)
+            });
+         } else {
+             axios({ method: 'GET', 'url': sitebase + getProducts }).then(result => {
+                this.products = result.data
+                }, error => {
+                console.error(error)
+            })
+         }
+
+     },
+     printProductLabel(customerProductId){
+        this.$router.push('/productLabel'); 
     }
   }
 }

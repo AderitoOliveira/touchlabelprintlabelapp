@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import ListOrders from '@/components/ListOrders'
 import ListLabelsToPrint from '@/components/ListLabelsToPrint'
 import ListProducts from '@/components/ListProducts'
+import ProductPrintLabels from '@/components/ProductPrintLabels'
 
 Vue.use(Router)
 
@@ -24,6 +25,11 @@ export default new Router({
       path: '/listProducts',
       name: 'ListProducts',
       component: ListProducts
+    },
+    {
+      path: '/productLabel',
+      name: 'ProductPrintLabels',
+      component: ProductPrintLabels
     }
   ]
 })
