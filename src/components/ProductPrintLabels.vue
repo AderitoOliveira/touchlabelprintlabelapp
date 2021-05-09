@@ -2,46 +2,6 @@
   <div id="order">
     <div class="container">
       <div class="outer-wrap">
-        <div class="row">
-          <div class="col-md-12">
-              <ul id="table-header">
-                <div class="row">
-                  <!--li class="table-header-item col-md-2">
-                    <div class="inner-label">Encomenda</div>
-                  </li>
-                  <li class="table-header-item col-md-2">
-                    <div class="inner-label">Cliente</div>
-                  </li>
-                  <li class="table-header-item col-md-3">
-                    <div class="inner-label">Data de Fecho</div>
-                  </li>
-                  <li class="table-header-item col-md-2">
-                    <div class="inner-label">Total Produtos<br><strong>Total Produzidos</strong></div>
-                  </li>
-                  <li class="table-header-item col-md-2">
-                    <div class="inner-label">Estado</div>
-                  </li-->
-                  <li class="table-header-item col-md-11">
-
-                  </li>
-                  <li class="table-header-item col-md-1">
-                    <a class="search-toggle pull-right" @click="toggleSearch()">
-                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14V14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z" fill="#28a745"/>
-                      </svg>
-                    </a>
-                  </li>
-                </div>
-              </ul>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <div v-if="showSearch" class="search-wrap">
-                    <input type="text" class="form-control"  v-on:keyup="updateLen" v-model="search" placeholder="Pesquise pelo número da encomenda...">
-            </div>
-          </div>
-        </div>
         <div id="card-content">
         <div class="row">
 
@@ -67,7 +27,7 @@
                         <div class="label-quantity">
                             <label class="control-label" for="qtyArticle">Quantidade</label>
                             <div class="input-wrap-inner">
-                            <input type="qtyArticle" class="form-control" id="qtyArticle" placeholder="Número Etiquetas" ng-model="qtyArticle">
+                            <input type="qtyArticle" class="form-control" id="qtyArticle" placeholder="Número Etiquetas" v-model="qtyArticle">
                             </div>
                         </div>
                     </div>
@@ -97,7 +57,7 @@
                         <div class="label-quantity">
                             <label class="control-label" for="qtyBox">Quantidade</label>
                             <div class="input-wrap-inner">
-                                <input type="qtyBox" class="form-control" id="qtyBox" placeholder="Número Etiquetas" ng-model="qtyBox">
+                                <input type="qtyBox" class="form-control" id="qtyBox" placeholder="Número Etiquetas" v-model="qtyBox">
                             </div>
                         </div>
                         </div>
@@ -148,6 +108,8 @@ export default {
       products: '',
       search: '',
       image_base: imageBase,
+      qtyArticle: '',
+      qtyBox: '',
       'showSearch': false
     }
   },
@@ -581,5 +543,13 @@ img.label-detail {
 	 padding-top: 12px;
 }
 
+.input-wrap-inner label.error {
+	 color: #c21414;
+	 font-size: 14px;
+	 font-weight: normal;
+	 width: 100%;
+	 float: left;
+	 padding: 6px 0 6px;
+}
 
 </style>
