@@ -4,9 +4,8 @@
       <div class="outer-wrap">
         <div id="card-content">
         <div class="row">
-
       <!--div class="container"-->
-            <div class="form-photo col-md-3">
+            <div class="form-photo col-md-3 offset-md-1">
                 <div class="form-item-inner">
                     <div class="photo-wrap">
                         <img :src="image_base + '/products_default.png'" class="product-image-label">
@@ -16,7 +15,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-5">
+            <div class="col-md-6">
                 <div class="row">
                 <div class="col-md-12" id="product-label-print">
                     <div class="label-wrap">
@@ -90,8 +89,8 @@ let sitebase
 let imageBase
 
 if (process.env.NODE_ENV === 'development') {
-  sitebase = 'http://192.168.1.14:8080/',
-  imageBase = 'http://192.168.1.14:8080/images/'
+  sitebase = 'http://192.168.1.5:8080/',
+  imageBase = 'http://192.168.1.5:8080/images/'
 } else {
   sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
   imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com'
@@ -129,7 +128,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="stylus">
 #app {
   font-family: 'Roboto', sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -276,16 +275,16 @@ a.search-toggle {
     border-radius: 10px;
     padding: 15px;
     background: #E5E1E1;
+    text-align: left;
 }
- 
-
-<!-- -->
 
 .label-left {
     max-width: 50%;
     float: left;
     padding-right: 20px;
-
+    .label-quantity {
+        padding-top: 22px;
+    }
 }
 
 .label-title {
@@ -300,6 +299,7 @@ a.search-toggle {
 	 max-width: 50%;
 	 float: left;
 }
+
 img.label-detail {
 	 max-width: 100%;
 }
@@ -376,11 +376,7 @@ img.label-detail {
 	 margin-right: 6px;
 }
 
-.form-wrap, .label-quantity, #main-action-wrap {
-	 padding-top: 36px;
-}
-
-.form-wrap label.control-label, .label-quantity label.control-label, #main-action-wrap label.control-label, .form-wrap .control-label, .label-quantity .control-label, #main-action-wrap .control-label {
+.label-quantity label.control-label,  .label-quantity .control-label {
 	 width: 100%;
 	 float: left;
 	 text-align: left !important;
@@ -395,155 +391,8 @@ img.label-detail {
 	 padding-top: 0px;
 }
 
-.form-wrap label.control-label.nolabel, .label-quantity label.control-label.nolabel, #main-action-wrap label.control-label.nolabel, .form-wrap .control-label.nolabel, .label-quantity .control-label.nolabel, #main-action-wrap .control-label.nolabel {
-	 height: 19px;
-}
 
-.form-wrap .photo-wrap, .label-quantity .photo-wrap, #main-action-wrap .photo-wrap {
-	 box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
-	 width: 100%;
-	 float: left;
-	 border-radius: 10px;
-	 overflow: hidden;
-}
-
-.form-wrap .photo-wrap .btn, .label-quantity .photo-wrap .btn, #main-action-wrap .photo-wrap .btn {
-	 width: 100%;
-	 float: left;
-	 border: none;
-	 background-color: #dcd51e;
-	 font-size: 18px;
-	 font-weight: normal;
-	 font-style: normal;
-	 font-stretch: normal;
-	 line-height: normal;
-	 letter-spacing: normal;
-	 color: #fff;
-	 border-radius: 0px;
-	 padding: 12px 0px;
-}
-
-.form-wrap .form-row, .label-quantity .form-row, #main-action-wrap .form-row {
-	 margin-bottom: 24px;
-}
-
-.form-wrap a.photo-link, .label-quantity a.photo-link, #main-action-wrap a.photo-link {
-	 width: 100%;
-	 float: left;
-}
-
-.form-wrap a.photo-link img, .label-quantity a.photo-link img, #main-action-wrap a.photo-link img {
-	 width: 100%;
-	 float: left;
-	 height: auto;
-}
-
-.form-wrap input.form-control, .label-quantity input.form-control, #main-action-wrap input.form-control {
-	 border-radius: 2px;
-	 box-shadow: inset -1px -1px 2px 0 rgba(118, 118, 118, 0.25);
-	 background-color: #fff;
-	 border: solid 1px #c4c4c4;
-	 font-size: 16px;
-	 font-weight: normal;
-	 font-style: normal;
-	 font-stretch: normal;
-	 line-height: normal;
-	 letter-spacing: normal;
-	 height: 48px;
-}
-
-.form-wrap .btn-tech-sheet, .label-quantity .btn-tech-sheet, #main-action-wrap .btn-tech-sheet {
-	 height: 48px;
-	 border-radius: 2px;
-	 background: #2755ae !important;
-	 width: 100%;
-	 text-align: center;
-	 font-size: 16px;
-	 font-weight: normal;
-	 font-style: normal;
-	 font-stretch: normal;
-	 line-height: normal;
-	 letter-spacing: normal;
-	 color: #fff;
-}
-
-.form-wrap button.btn-cancel, .label-quantity button.btn-cancel, #main-action-wrap button.btn-cancel {
-	 height: 48px;
-	 width: 100%;
-	 text-align: center;
-	 border-radius: 2px;
-	 background-color: #c21414;
-	 font-size: 16px;
-	 font-weight: normal;
-	 font-style: normal;
-	 font-stretch: normal;
-	 line-height: normal;
-	 letter-spacing: normal;
-	 color: #fff;
-	 border: 0px;
-}
-
-.form-wrap button.btn-remove, .label-quantity button.btn-remove, #main-action-wrap button.btn-remove {
-	 height: 48px;
-	 width: 100%;
-	 text-align: center;
-	 border-radius: 2px;
-	 background-color: #dcd51e;
-	 font-size: 16px;
-	 font-weight: normal;
-	 font-style: normal;
-	 font-stretch: normal;
-	 line-height: normal;
-	 letter-spacing: normal;
-	 color: #fff;
-	 border: 0px;
-}
-
-.form-wrap button.btn-remove img, .label-quantity button.btn-remove img, #main-action-wrap button.btn-remove img {
-	margin-top: -3px;
-}
-
-.form-wrap button.btn-save, .label-quantity button.btn-save, #main-action-wrap button.btn-save {
-	 height: 48px;
-	 width: 100%;
-	 text-align: center;
-	 border-radius: 2px;
-	 background-color: #27ae60;
-	 font-size: 16px;
-	 font-weight: normal;
-	 font-style: normal;
-	 font-stretch: normal;
-	 line-height: normal;
-	 letter-spacing: normal;
-	 color: #fff;
-	 border: 0px;
-	 width: 100%;
-}
-
-.form-wrap button.btn-save-small, .label-quantity button.btn-save-small, #main-action-wrap button.btn-save-small {
-	 height: 30px;
-	 text-align: center;
-	 border-radius: 2px;
-	 background-color: #27ae60;
-	 font-size: 14px;
-	 font-weight: normal;
-	 font-style: normal;
-	 font-stretch: normal;
-	 line-height: normal;
-	 letter-spacing: normal;
-	 color: #fff;
-	 border: 0px;
-}
-
-.form-wrap button img, .label-quantity button img, #main-action-wrap button img {
-	 margin-right: 6px;
-}
-
-.form-wrap .button-holder, .label-quantity .button-holder, #main-action-wrap .button-holder {
-	 padding-top: 12px;
-}
-
-.input-wrap-inner label.error {
+.input-wrap-inner {
 	 color: #c21414;
 	 font-size: 14px;
 	 font-weight: normal;
@@ -551,5 +400,184 @@ img.label-detail {
 	 float: left;
 	 padding: 6px 0 6px;
 }
+
+.product-image-label{
+    width:100%;
+    height:auto;
+    float:left;
+    border-radius:4px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.form-wrap, .label-quantity, #main-action-wrap {
+    padding-top: 36px;
+    label.control-label, .control-label {
+        width: 100%;
+        float: left;
+        text-align: left !important;
+        font-size: 16px;
+        font-weight: bold;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        color: #222222;
+        margin-bottom:8px;
+        padding-top:0px;
+        &.nolabel{
+            height:19px;
+        }
+    }
+    .photo-wrap {
+        box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+        width: 100%;
+        float: left;
+        border-radius:  10px;
+        overflow: hidden;
+        .btn {
+            width: 100%;
+            float: left;
+            border: none;
+            background-color: #dcd51e;
+            font-size: 18px;
+            font-weight: normal;
+            font-style: normal;
+            font-stretch: normal;
+            line-height: normal;
+            letter-spacing: normal;
+            color: #ffffff;
+            border-radius: 0px;
+            padding: 12px 0px;
+        }
+    }
+    .form-row{
+        margin-bottom:24px;
+    }
+    a.photo-link {
+        width: 100%;
+        float: left;
+        img {
+            width: 100%;
+            float: left;
+            height: auto;
+        }
+    }
+    input.form-control {
+        border-radius: 2px;
+        box-shadow: inset -1px -1px 2px 0 rgba(118, 118, 118, 0.25);
+        background-color: #ffffff;
+        border: solid 1px #c4c4c4;
+        font-size: 16px;
+        font-weight: normal;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        height: 48px;
+    }
+    .btn-tech-sheet {
+        height: 48px;
+        border-radius: 2px;
+        background: #2755ae !important;
+        width: 100%;
+        text-align: center;
+        font-size: 16px;
+        font-weight: normal;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        color: #ffffff;
+    }
+    
+    button.btn-cancel {
+        height: 48px;
+        width: 100%;
+        text-align: center;
+        border-radius: 2px;
+        background-color: #c21414;
+        font-size: 16px;
+        font-weight: normal;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        color: #ffffff;
+        border: 0px;
+    }
+
+    button.btn-remove {
+        height: 48px;
+        width: 100%;
+        text-align: center;
+        border-radius: 2px;
+        background-color: #DCD51E;
+        font-size: 16px;
+        font-weight: normal;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        color: #ffffff;
+        border: 0px;
+        img {
+            margin-top: -3px;
+        }
+    }
+    
+    button.btn-save {
+        height: 48px;
+        width: 100%;
+        text-align: center;
+        border-radius: 2px;
+        background-color: #27ae60;
+        font-size: 16px;
+        font-weight: normal;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        color: #ffffff;
+        border: 0px;
+        width: 100%;
+    }
+
+    button.btn-save-small {
+        height: 30px;
+        //width: 100%;
+        text-align: center;
+        border-radius: 2px;
+        background-color: #27ae60;
+        font-size: 14px;
+        font-weight: normal;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        color: #ffffff;
+        border: 0px;
+    }
+
+    button img{
+        margin-right:6px;
+    }
+    .button-holder {
+        padding-top: 12px;
+    }
+}
+
+#box-label-print{
+    padding-top:36px;
+}
+
+input.form-control, textarea{
+    border:solid 1px #c4c4c4 !important;
+    &:focus{
+        border-color:#222222 !important;
+        outline:none !important;
+        box-shadow:inset -1px -1px 2px 0 rgba(118,118,118,0.25) !important;
+    }
+}
+
 
 </style>
