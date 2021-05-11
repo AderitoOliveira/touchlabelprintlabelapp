@@ -42,24 +42,6 @@
             </div>
           </div>
         </div>
-        <!-- div class="row" -->
-          <!-- div class="col-md-12" -->
-            <!-- ul id="table-content" class="row" -->
-              <!--li class="order-item col-md-12" v-bind:key="index + order.ORDER_ID" v-for="(order, index) in filterOrders">
-                <a v-if=" order.STATUS != 'Fechada'" class="order-link" v-bind:href="'#/order/'+order.ORDER_ID">
-                  <ul class="order-item-list row">
-                    <li class="order-item-detail col-md-2"><div class="item-inner"><strong>{{order.ORDER_ID}}</strong></div></li>
-                    <li class="order-item-detail col-md-2"><div class="item-inner">{{order.CLIENT_NAME}}</div></li>
-                    <li class="order-item-detail col-md-3"><div class="item-inner">{{order.MODIFIED_DATE}}</div></li>
-                    <li class="order-item-detail col-md-2"><div class="item-inner">{{order.QTY_ORDERED}} / <strong>{{order.QTY_PRODUCED}}</strong></div></li>
-                    <li class="order-item-detail col-md-2"><div class="item-inner">{{order.STATUS}}</div></li>
-                    <li class="order-item-detail col-md-1"><div class="item-inner"><a v-bind:href="'#/order/'+order.ORDER_ID"><img :src="icon"></a></div></li>
-                  </ul>
-                  <div class="status-wrap">
-                    <div class="status-inner" :style="{width: Math.round(order.QTY_PRODUCED * 100 / order.QTY_ORDERED)+'%', background: 'hsl(calc('+Math.round(order.QTY_PRODUCED * 100 / order.QTY_ORDERED)+' * .9), 50%, 50%)'}"></div>
-                  </div>
-                </a>
-              </li-->
               <div id="card-content">
                 <div class="row">
                     <div class="col-md-3" v-for="product in products" :key="product.CUSTOMER_PRODUCT_ID">
@@ -137,8 +119,8 @@ let sitebase
 let imageBase
 
 if (process.env.NODE_ENV === 'development') {
-  sitebase = 'http://192.168.1.14:8080/',
-  imageBase = 'http://192.168.1.14:8080/images/'
+  sitebase = 'http://192.168.1.17:8080/',
+  imageBase = 'http://192.168.1.17:8080/images/'
 } else {
   sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
   imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com'
@@ -219,7 +201,9 @@ export default {
 
      },
      printProductLabel(customerProductId){
-        this.$router.push('/productLabel'); 
+       alert(customerProductId);
+        // this.$router.push({ path: '/productLabel/', params: { customerProductId } }); 
+        this.$router.push({ name: 'ProductPrintLabels', params: { customerProductId } }); 
     }
   }
 }

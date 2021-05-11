@@ -89,14 +89,14 @@ let sitebase
 let imageBase
 
 if (process.env.NODE_ENV === 'development') {
-  sitebase = 'http://192.168.1.5:8080/',
-  imageBase = 'http://192.168.1.5:8080/images/'
+  sitebase = 'http://192.168.1.17:8080/',
+  imageBase = 'http://192.168.1.17:8080/images/'
 } else {
   sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
   imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com'
 }
 
-const getProducts = 'firstProducts'
+const getProductLabelDetail = 'labelToPrintForProduct/'
 const searchProduct = 'getProduct/'
 
 export default {
@@ -104,17 +104,22 @@ export default {
   data () {
     return {
       icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAIISURBVHgB7VfLccJADJUJd0gHBhogHUAJqQB3EK45YSogVBDoIB3gDuIGIL7mhCvAeQ9kxqzXH8iMM5Phzeyw2ZX0JK0kgjMYDCZJkryJSFeaQeQ4ju/0+/0v/OFKs4jbKelut3OkASDQBB/dlvwR7sSNoX2NsOu6bLkht61Wy9Xj+HA4hFEUBXIFahGDkEQv2Hpi6XfcsVpjbD/gxBxORFU2K1MNgwsYZq9PpXzI8M6jLHRmcisxo+z1ep9KeAamXICoxliP7H3ucbY21H3q0kaRfUcb+mKA8C3hOUlNxTnkfJsh2OH5zHAyxBoj83FG7shnjRikCwvpKiVlKrH2uhbquM9sZBUwk4dqK89hHiBaT05FdAGkdK2kNOTL6U25photI5znKcSDzVElsVZvDpl28SzXqU5o00Xks0pieB3blLWHS5F9SwP5FrQQz+26x8FBLC13a3VuZFNEFpeVxEyppT3O6dICo6FYFyt9qgQTyWO13W5XOXtF7QSiDavSkPchZ82IDg3fOI5QlE+124mCiPqZfWgSQ/E9TSkd5B7DYmOSUpfDpejdrREbkfhiDIYaWKbpt9grjjgLvik87+m7xyWivFtStog0i1rfTvpt43HP1KKI+PbHFgER77jCkna6jdhwIsBHIL/E/X+u/0/MPt5Lc7+bUkQPnU7nW0djU+Qx+F5/ADN8+ahyQQG5AAAAAElFTkSuQmCC',
-      products: '',
+      productLabel: '',
       search: '',
+      customerProductId: '',
       image_base: imageBase,
       qtyArticle: '',
       qtyBox: '',
       'showSearch': false
     }
   },
+  created () {
+      this.customerProductId = this.$route.params.customerProductId;
+      alert(this.customerProductId);
+  },
   mounted () {
-    axios({ method: 'GET', 'url': sitebase + getProducts }).then(result => {
-      this.products = result.data
+    axios({ method: 'GET', 'url': sitebase + getProductLabelDetail + encodeURIComponent(this.customerProductId) }).then(result => {
+      this.productLabel = result.data
     }, error => {
       console.error(error)
     })
