@@ -64,9 +64,12 @@
                         <img class="label-detail" src="../assets/icons/bc_label_box.svg" width="244px" height="129px">
                         </div>
                         <div class="label-bottom">
-                        <div class="label-button">
-                            <button type="submit" ng-click="printLabelBox(product.BOX_PRINTER_IP_ADDRESS, product.BOX_PRINTER_PORT, product.Bar_Code_Tech_Sheet, product.PRODUCT_NAME_FOR_LABEL, product.CUSTOMER_PRODUCT_ID, product.ZPL_STRING_BOX, product.BOX_BARCODE_TYPE, product.Qty_By_Box, qtyBox)" class="btn btn-default btn-save"><img src="../assets/icons/symbol-print.svg" width="20px" height="18px" />Imprimir</button>
-                        </div>
+                            <div v-if="productLabel[0].LABEL_HAS_COUNTER == 'false'">
+                                <button type="submit" ng-click="printLabelBox(product.BOX_PRINTER_IP_ADDRESS, product.BOX_PRINTER_PORT, product.Bar_Code_Tech_Sheet, product.PRODUCT_NAME_FOR_LABEL, product.CUSTOMER_PRODUCT_ID, product.ZPL_STRING_BOX, product.BOX_BARCODE_TYPE, product.Qty_By_Box, qtyBox)" class="btn btn-default btn-save"><img src="../assets/icons/symbol-print.svg" width="20px" height="18px" />Imprimir</button>
+                            </div>
+                            <div class="label-button">
+                                <button type="submit" ng-click="printLabelBox(product.BOX_PRINTER_IP_ADDRESS, product.BOX_PRINTER_PORT, product.Bar_Code_Tech_Sheet, product.PRODUCT_NAME_FOR_LABEL, product.CUSTOMER_PRODUCT_ID, product.ZPL_STRING_BOX, product.BOX_BARCODE_TYPE, product.Qty_By_Box, qtyBox)" class="btn btn-default btn-save"><img src="../assets/icons/symbol-print.svg" width="20px" height="18px" />Imprimir</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -119,7 +122,8 @@ export default {
   },
   mounted () {
     axios({ method: 'GET', 'url': sitebase + getProductLabelDetail + encodeURIComponent(this.customerProductId) }).then(result => {
-      this.productLabel = result.data
+      this.productLabel = result.data,
+      console.log(this.productLabel[0].LABEL_HAS_COUNTER)
     }, error => {
       console.error(error)
     })
