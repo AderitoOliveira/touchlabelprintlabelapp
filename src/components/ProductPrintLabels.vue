@@ -78,16 +78,24 @@
                             Etiquetas de Caixa
                         </div>
                         <div class="label-quantity">
-                            <label class="control-label" for="qtyBox">Quantidade</label>
+                            <label class="control-label" for="orderId">Num. Encomenda</label>
                             <div class="input-wrap-inner">
-                                <input type="qtyBox" class="form-control" id="qtyBox" placeholder="Número Etiquetas" v-model="qtyBox">
+                                <input type="orderId" class="form-control" id="orderId" placeholder="Número da encomenda" v-model="orderId">
                             </div>
                         </div>
                         <div class="label-quantity">
-                            <label class="control-label" for="qtyBox">Quantidade</label>
+                            <label class="control-label" for="qtyBox">Contador Caixas</label>
                             <div class="input-wrap-inner">
-                                <input type="qtyBox" class="form-control" id="qtyBox" placeholder="Número Etiquetas" v-model="qtyBox">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <input type="boxCounterIntial" class="form-control" id="boxCounterIntial" placeholder="Num. etiqueta inicial" v-model="boxCounterIntial">
+                                    </div>
+                                    <div class="col-md-2 offset-md-3">
+                                        <input type="boxCounterFinal" class="form-control" id="boxCounterFinal" placeholder="Num. etiqueta final" v-model="boxCounterFinal">
+                                    </div>
+                                </div>
                             </div>
+
                         </div>
                         </div>
                         <div class="label-right">
