@@ -119,8 +119,8 @@ let sitebase
 let imageBase
 
 if (process.env.NODE_ENV === 'development') {
-  sitebase = 'http://192.168.1.17:8080/',
-  imageBase = 'http://192.168.1.17:8080/images/'
+  sitebase = 'http://' + process.env.IP_ADDRESS + ':8080/',
+  imageBase = 'http://' + process.env.IP_ADDRESS + ':8080/images/'
 } else {
   sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
   imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com'

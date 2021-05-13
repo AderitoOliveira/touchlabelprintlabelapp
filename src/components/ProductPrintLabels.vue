@@ -47,7 +47,7 @@
                     </div>
                     </div>
                 </div>
-                <div class="col-md-12" id="box-label-print">
+                <div class="col-md-12" id="box-label-print"  v-if="productLabel[0].LABEL_HAS_COUNTER == 'false'">
                     <div class="label-wrap">
                         <div class="label-left">
                         <div class="label-title">
@@ -64,9 +64,36 @@
                         <img class="label-detail" src="../assets/icons/bc_label_box.svg" width="244px" height="129px">
                         </div>
                         <div class="label-bottom">
-                            <div v-if="productLabel[0].LABEL_HAS_COUNTER == 'false'">
+                            <div class="label-button">
                                 <button type="submit" ng-click="printLabelBox(product.BOX_PRINTER_IP_ADDRESS, product.BOX_PRINTER_PORT, product.Bar_Code_Tech_Sheet, product.PRODUCT_NAME_FOR_LABEL, product.CUSTOMER_PRODUCT_ID, product.ZPL_STRING_BOX, product.BOX_BARCODE_TYPE, product.Qty_By_Box, qtyBox)" class="btn btn-default btn-save"><img src="../assets/icons/symbol-print.svg" width="20px" height="18px" />Imprimir</button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12" id="box-label-print"  v-if="productLabel[0].LABEL_HAS_COUNTER == 'true'">
+                    <div class="label-wrap">
+                        <div class="label-left">
+                        <div class="label-title">
+                            Etiquetas de Caixa
+                        </div>
+                        <div class="label-quantity">
+                            <label class="control-label" for="qtyBox">Quantidade</label>
+                            <div class="input-wrap-inner">
+                                <input type="qtyBox" class="form-control" id="qtyBox" placeholder="Número Etiquetas" v-model="qtyBox">
+                            </div>
+                        </div>
+                        <div class="label-quantity">
+                            <label class="control-label" for="qtyBox">Quantidade</label>
+                            <div class="input-wrap-inner">
+                                <input type="qtyBox" class="form-control" id="qtyBox" placeholder="Número Etiquetas" v-model="qtyBox">
+                            </div>
+                        </div>
+                        </div>
+                        <div class="label-right">
+                        <img class="label-detail" src="../assets/icons/bc_label_box.svg" width="244px" height="129px">
+                        </div>
+                        <div class="label-bottom">
                             <div class="label-button">
                                 <button type="submit" ng-click="printLabelBox(product.BOX_PRINTER_IP_ADDRESS, product.BOX_PRINTER_PORT, product.Bar_Code_Tech_Sheet, product.PRODUCT_NAME_FOR_LABEL, product.CUSTOMER_PRODUCT_ID, product.ZPL_STRING_BOX, product.BOX_BARCODE_TYPE, product.Qty_By_Box, qtyBox)" class="btn btn-default btn-save"><img src="../assets/icons/symbol-print.svg" width="20px" height="18px" />Imprimir</button>
                             </div>
@@ -92,8 +119,8 @@ let sitebase
 let imageBase
 
 if (process.env.NODE_ENV === 'development') {
-  sitebase = 'http://192.168.1.17:8080/',
-  imageBase = 'http://192.168.1.17:8080/images/'
+  sitebase = 'http://' + process.env.IP_ADDRESS + ':8080/',
+  imageBase = 'http://' + process.env.IP_ADDRESS + ':8080/images/'
 } else {
   sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
   imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com'
