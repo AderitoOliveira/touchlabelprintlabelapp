@@ -47,7 +47,7 @@
                     </div>
                     </div>
                 </div>
-                <div class="col-md-12" id="box-label-print"  v-if="productLabel[0].LABEL_HAS_COUNTER == 'false'">
+                <div class="col-md-12" id="box-label-print"  v-if="showPage == 'false'">
                     <div class="label-wrap">
                         <div class="label-left">
                         <div class="label-title">
@@ -71,7 +71,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-12" id="box-label-print"  v-if="productLabel[0].LABEL_HAS_COUNTER == 'true'">
+                <div class="col-md-12" id="box-label-print"  v-if="showPage == 'true'">
                     <div class="label-wrap">
                         <div class="label-left">
                         <div class="label-title">
@@ -116,12 +116,30 @@
             </div>
       </div>
     </div>
+    <b-modal
+      ref="modal-paint"
+      id="modal-1"
+      :modal-class="centermodal"
+      :title="modal.title"
+      :okTitle="modal.ok_button"
+      :footer-class="(modal_action ? 'no_action' : 'action')"
+       @ok="goToListProducts()"
+       ok-only
+       :okVariant='danger'
+    >
+      <p class="my-4">{{modal.content}}</p>
+    </b-modal>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
 import _ from 'lodash';
+import Loading from 'vue-loading-overlay'
+// Import stylesheet
+import 'vue-loading-overlay/dist/vue-loading.css'
+
+import Spinner from 'vue-simple-spinner'
 
 let sitebase
 let imageBase
@@ -142,23 +160,33 @@ export default {
   data () {
     return {
       icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAIISURBVHgB7VfLccJADJUJd0gHBhogHUAJqQB3EK45YSogVBDoIB3gDuIGIL7mhCvAeQ9kxqzXH8iMM5Phzeyw2ZX0JK0kgjMYDCZJkryJSFeaQeQ4ju/0+/0v/OFKs4jbKelut3OkASDQBB/dlvwR7sSNoX2NsOu6bLkht61Wy9Xj+HA4hFEUBXIFahGDkEQv2Hpi6XfcsVpjbD/gxBxORFU2K1MNgwsYZq9PpXzI8M6jLHRmcisxo+z1ep9KeAamXICoxliP7H3ucbY21H3q0kaRfUcb+mKA8C3hOUlNxTnkfJsh2OH5zHAyxBoj83FG7shnjRikCwvpKiVlKrH2uhbquM9sZBUwk4dqK89hHiBaT05FdAGkdK2kNOTL6U25photI5znKcSDzVElsVZvDpl28SzXqU5o00Xks0pieB3blLWHS5F9SwP5FrQQz+26x8FBLC13a3VuZFNEFpeVxEyppT3O6dICo6FYFyt9qgQTyWO13W5XOXtF7QSiDavSkPchZ82IDg3fOI5QlE+124mCiPqZfWgSQ/E9TSkd5B7DYmOSUpfDpejdrREbkfhiDIYaWKbpt9grjjgLvik87+m7xyWivFtStog0i1rfTvpt43HP1KKI+PbHFgER77jCkna6jdhwIsBHIL/E/X+u/0/MPt5Lc7+bUkQPnU7nW0djU+Qx+F5/ADN8+ahyQQG5AAAAAElFTkSuQmCC',
-      productLabel: '',
-      search: '',
+      productLabel: {},
+      showPage: '',
       customerProductId: '',
       image_base: imageBase,
       qtyArticle: '',
       qtyBox: '',
-      'showSearch': false
+      modal_action: false,
+      modal_trigger: '',
+      centermodal: ['centermodal'],
+      modal: {
+        title: 'Default Modal Title',
+        content: 'this is the modal content',
+      }
     }
   },
   created () {
       this.customerProductId = this.$route.params.customerProductId;
-      alert(this.customerProductId);
   },
   mounted () {
     axios({ method: 'GET', 'url': sitebase + getProductLabelDetail + encodeURIComponent(this.customerProductId) }).then(result => {
-      this.productLabel = result.data,
-      console.log(this.productLabel[0].LABEL_HAS_COUNTER)
+      this.productLabel = result.data;
+      if ( this.productLabel.length == 0) 
+      {
+          this.showPage='false'
+          this.launchModal()
+      }
+      //console.log(this.productLabel[0].LABEL_HAS_COUNTER)
     }, error => {
       console.error(error)
     })
@@ -167,12 +195,30 @@ export default {
     
   },
   methods: {
-
+   launchModal () {
+    this.modal_action = false
+    this.modal = {
+        title: 'Configuração em Falta',
+        content: 'Este producto não tem a associação entre o produto e o cliente ou não existe etiqueta criada para o cliente!',
+        ok_button: 'Fechar'
+    }
+    this.$refs['modal-paint'].show()
+    },
+    goToListProducts () {
+        this.$router.push('/listProducts')
+    }
   }
 }
 </script>
 
 <style lang="stylus">
+
+.centermodal > div {
+  position: relative;
+  margin: 0 auto;
+  top: 25%;
+}
+
 #app {
   font-family: 'Roboto', sans-serif;
   -webkit-font-smoothing: antialiased;

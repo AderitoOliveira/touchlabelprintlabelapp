@@ -6,21 +6,6 @@
           <div class="col-md-12">
               <ul id="table-header">
                 <div class="row">
-                  <!--li class="table-header-item col-md-2">
-                    <div class="inner-label">Encomenda</div>
-                  </li>
-                  <li class="table-header-item col-md-2">
-                    <div class="inner-label">Cliente</div>
-                  </li>
-                  <li class="table-header-item col-md-3">
-                    <div class="inner-label">Data de Fecho</div>
-                  </li>
-                  <li class="table-header-item col-md-2">
-                    <div class="inner-label">Total Produtos<br><strong>Total Produzidos</strong></div>
-                  </li>
-                  <li class="table-header-item col-md-2">
-                    <div class="inner-label">Estado</div>
-                  </li-->
                   <li class="table-header-item col-md-11">
 
                   </li>
@@ -89,10 +74,6 @@
                                             @click="printProductLabel(product.CUSTOMER_PRODUCT_ID, product.PRODUCT_NAME)">
                                             <img src="../assets/icons/card-print.svg" width="30px" height="30px" />
                                         </a>
-                                        <!--a class="btn btn-card btn-right"
-                                            ng-click="editProductPath(product.PRODUCT_NAME, product.CUSTOMER_PRODUCT_ID, product.INTERNAL_PRODUCT_ID, product.CLIENT_NAME, product.IMAGE_NAME, product.BAR_CODE_NUMBER, product.PRODUCT_NAME_FOR_LABEL, product.NUM_ARTICLES_IN_BOX, product.PRICE_EURO_1, product.PRICE_EURO_2, product.IS_PARENT)">
-                                            <img src="assets/icons/card-edit.svg" width="30px" height="30px" />
-                                        </a-->
                                         <a class="btn btn-card btn-right"
                                             @click="productDetail(product.CUSTOMER_PRODUCT_ID)">
                                             <img src="../assets/icons/card-edit.svg" width="30px" height="30px" />
@@ -149,23 +130,17 @@ export default {
   },
   computed: {
     filterProducts: function () {
-      let filtered = this.products
-      let currentSearch = '';
       if (this.search && this.search != this.currentSearch) {
           this.currentSearch = this.search;
-        console.log(this.currentSearch);
-        console.log(this.search);
-        //filtered = this.products.filter(
-        //  o => o.CUSTOMER_PRODUCT_ID.toLowerCase().indexOf(this.search) > -1
-        //)
+        console.log(this.currentSearch)
+        console.log(this.search)
         axios({ method: 'GET', 'url': sitebase + searchProduct + this.search }).then(result => {
-            this.products = result.data;
-            return this.products;
+            this.products = result.data
+            return this.products
             }, error => {
             console.error(error)
             })
       }
-     // return this.products
     }
   },
   methods: {
@@ -178,32 +153,29 @@ export default {
       }
     },
     updateLen: _.debounce(
-      function() {
+      function () {
         this.searchFilterDebounce()
       }, 800),
-      
-     searchFilterDebounce () {
-         alert(this.search);
-         if(this.search != '') {
-            axios({ method: 'GET', 'url': sitebase + searchProduct + encodeURIComponent(this.search) }).then(result => {
-                this.products = result.data;
-                return this.products;
-                }, error => {
-                console.error(error)
-            });
+    searchFilterDebounce () {
+      alert(this.search)
+      if (this.search !== '') {
+        axios({ method: 'GET', 'url': sitebase + searchProduct + encodeURIComponent(this.search) }).then(result => {
+          this.products = result.data;
+          return this.products
+          }, error => {
+              console.error(error)
+         })
          } else {
              axios({ method: 'GET', 'url': sitebase + getProducts }).then(result => {
                 this.products = result.data
                 }, error => {
                 console.error(error)
             })
-         }
-
-     },
-     printProductLabel(customerProductId){
-       alert(customerProductId);
-        // this.$router.push({ path: '/productLabel/', params: { customerProductId } }); 
-        this.$router.push({ name: 'ProductPrintLabels', params: { customerProductId } }); 
+          }
+    },
+    printProductLabel (customerProductId) {
+      alert(customerProductId)
+      this.$router.push({ name: 'ProductPrintLabels', params: { customerProductId } })
     }
   }
 }
@@ -349,180 +321,205 @@ a.search-toggle {
     cursor:pointer;
 }
 
-
 <!-- -->
 
 .header-actions {
-	 border-radius: 4px;
-	 box-shadow: inset 0 -1px 2px 0 rgba(0, 0, 0, 0.25);
-	 background-color: #fff;
-	 border: solid 1px #cacbcc;
-	 overflow: hidden;
+ border-radius: 4px;
+ box-shadow: inset 0 -1px 2px 0 rgba(0, 0, 0, 0.25);
+ background-color: #fff;
+ border: solid 1px #cacbcc;
+ overflow: hidden;
 }
- button.button {
-	 font-size: 18px;
-	 font-weight: normal;
-	 font-style: normal;
-	 font-stretch: normal;
-	 line-height: normal;
-	 letter-spacing: normal;
-	 color: #fff;
-	 border: none;
-	 padding: 16px 0px;
-	 width: 100%;
-}
- button.button span.button-inner-wrap {
-	 margin-bottom: -4px;
-}
- button.button span.button-inner-wrap img {
-	 float: left;
-	 margin-left: 15px;
-}
- button.button span.button-inner-wrap .btn-text {
-	 float: left;
-	 margin-bottom: -10px;
-	 margin-left: 6px;
-}
- button.button.add {
-	 background: #27ae60;
-}
- button.button.multiple {
-	 width: 50%;
-	 float: left;
-}
- button.button.multiple img {
-	 margin-right: 6px;
-}
- button.button.print {
-	 background: #2755ae;
-}
- .search-wrap {
-	 width: 100%;
-	 float: left;
-}
- .search-wrap input {
-	 margin: 0 auto;
-	 width: 100%;
-	 float: left;
-	 height: 100%;
-	 border: none;
-	 padding: 14px 4px;
-	 position: relative;
-	 z-index: 0;
-	 background-color: #fafbfc;
-	 box-shadow: inset 2px 0 2px 0 rgba(0, 0, 0, 0.25);
-	 font-size: 18px;
-	 font-weight: normal;
-	 font-style: normal;
-	 font-stretch: normal;
-	 line-height: normal;
-	 letter-spacing: normal;
-	 color: rgba(0, 0, 0, 0.75);
-}
- #card-content {
-	 padding-top: 36px;
-}
- #card-content .item-card {
-	 background-color: #fff;
-	 box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
-	 border-radius: 10px;
-	 overflow: hidden;
-	 position: relative;
-	 margin-bottom: 36px;
-}
- #card-content .item-card .image-wrapper {
-	 z-index: 0;
-}
- #card-content .item-card .image-wrapper .image-inner {
-	 width: 100%;
-	 padding-top: 100%;
-	 height: 0;
-	 background-size: cover;
-	 background-position: center;
-}
- #card-content .item-card .info-wrapper {
-	 position: absolute;
-	 bottom: 0px;
-	 z-index: 1;
-	 background: #fff;
-	 width: 100%;
-	 float: left;
-	 padding: 9px 12px;
-	 min-height: 48px;
-}
- #card-content .item-card .info-wrapper .name {
-	 max-width: calc(100% - 30px);
-	 float: left;
-	 font-size: 18px;
-	 line-height: 30px;
-	 letter-spacing: normal;
-	 color: #222;
-	 width: 100%;
-}
- #card-content .item-card .info-wrapper .card-actions {
-	 width: 30px;
-	 float: right;
-	 position: absolute;
-	 right: 12px;
-	 bottom: 9px;
-}
- #card-content .item-card .info-wrapper .card-actions .btn-card {
-	 padding: 0px;
-	 border: 0px;
-}
- #card-content .item-card .item-hover {
-	 position: absolute;
-	 width: 100%;
-	 height: 100%;
-	 top: 100%;
-}
- #card-content .item-card .item-hover .top-overlay {
-	 background-color: rgba(0, 0, 0, 0.75);
-	 height: 100%;
-	 color: #fff;
-	 padding: 20px 12px 48px;
-}
- #card-content .item-card .item-hover .top-overlay .item-name {
-	 font-size: 22px;
-	 min-height: 55px;
-	 width: 100%;
-	 float: left;
-}
- #card-content .item-card .item-hover .top-overlay .price-half {
-	 width: 50%;
-	 float: left;
-}
- #card-content .item-card .item-hover .top-overlay .item-text {
-	 font-size: 18px;
-	 width: 100%;
-	 float: left;
-	 margin: 3px 0px;
-}
- #card-content .item-card .item-hover .top-overlay .item-text span.label {
-	 font-size: 14px;
-	 width: 100%;
-	 float: left;
-	 text-align: left;
-	 font-weight: normal;
-	 padding: 0px;
-}
- #card-content .item-card .item-hover .btn-card {
-	 border: 0px;
-	 padding: 0px;
-}
- #card-content .item-card .item-hover .btn-left {
-	 float: left;
-}
- #card-content .item-card .item-hover .btn-right {
-	 float: right;
-}
- #card-content .item-card:hover .item-hover {
-	 position: absolute;
-	 width: 100%;
-	 height: 100%;
-	 top: 0px;
-	 z-index: 1;
-}
- 
 
+button.button {
+ font-size: 18px;
+ font-weight: normal;
+ font-style: normal;
+ font-stretch: normal;
+ line-height: normal;
+ letter-spacing: normal;
+ color: #fff;
+ border: none;
+ padding: 16px 0px;
+ width: 100%;
+}
+
+button.button span.button-inner-wrap {
+ margin-bottom: -4px;
+}
+
+button.button span.button-inner-wrap img {
+ float: left;
+ margin-left: 15px;
+}
+
+button.button span.button-inner-wrap .btn-text {
+ float: left;
+ margin-bottom: -10px;
+ margin-left: 6px;
+}
+
+button.button.add {
+ background: #27ae60;
+}
+
+button.button.multiple {
+ width: 50%;
+ float: left;
+}
+
+button.button.multiple img {
+ margin-right: 6px;
+}
+
+button.button.print {
+ background: #2755ae;
+}
+
+.search-wrap {
+ width: 100%;
+ float: left;
+}
+
+.search-wrap input {
+ margin: 0 auto;
+ width: 100%;
+ float: left;
+ height: 100%;
+ border: none;
+ padding: 14px 4px;
+ position: relative;
+ z-index: 0;
+ background-color: #fafbfc;
+ box-shadow: inset 2px 0 2px 0 rgba(0, 0, 0, 0.25);
+ font-size: 18px;
+ font-weight: normal;
+ font-style: normal;
+ font-stretch: normal;
+ line-height: normal;
+ letter-spacing: normal;
+ color: rgba(0, 0, 0, 0.75);
+}
+
+#card-content {
+ padding-top: 36px;
+}
+
+#card-content .item-card {
+ background-color: #fff;
+ box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+ border-radius: 10px;
+ overflow: hidden;
+ position: relative;
+ margin-bottom: 36px;
+}
+
+#card-content .item-card .image-wrapper {
+ z-index: 0;
+}
+
+#card-content .item-card .image-wrapper .image-inner {
+ width: 100%;
+ padding-top: 100%;
+ height: 0;
+ background-size: cover;
+ background-position: center;
+}
+
+#card-content .item-card .info-wrapper {
+ position: absolute;
+ bottom: 0px;
+ z-index: 1;
+ background: #fff;
+ width: 100%;
+ float: left;
+ padding: 9px 12px;
+ min-height: 48px;
+}
+
+#card-content .item-card .info-wrapper .name {
+ max-width: calc(100% - 30px);
+ float: left;
+ font-size: 18px;
+ line-height: 30px;
+ letter-spacing: normal;
+ color: #222;
+ width: 100%;
+}
+
+#card-content .item-card .info-wrapper .card-actions {
+ width: 30px;
+ float: right;
+ position: absolute;
+ right: 12px;
+ bottom: 9px;
+}
+
+#card-content .item-card .info-wrapper .card-actions .btn-card {
+ padding: 0px;
+ border: 0px;
+}
+
+#card-content .item-card .item-hover {
+ position: absolute;
+ width: 100%;
+ height: 100%;
+ top: 100%;
+}
+
+#card-content .item-card .item-hover .top-overlay {
+ background-color: rgba(0, 0, 0, 0.75);
+ height: 100%;
+ color: #fff;
+ padding: 20px 12px 48px;
+}
+
+#card-content .item-card .item-hover .top-overlay .item-name {
+ font-size: 22px;
+ min-height: 55px;
+ width: 100%;
+ float: left;
+}
+
+#card-content .item-card .item-hover .top-overlay .price-half {
+ width: 50%;
+ float: left;
+}
+
+#card-content .item-card .item-hover .top-overlay .item-text {
+ font-size: 18px;
+ width: 100%;
+ float: left;
+ margin: 3px 0px;
+}
+
+#card-content .item-card .item-hover .top-overlay .item-text span.label {
+ font-size: 14px;
+ width: 100%;
+ float: left;
+ text-align: left;
+ font-weight: normal;
+ padding: 0px;
+}
+
+#card-content .item-card .item-hover .btn-card {
+ border: 0px;
+ padding: 0px;
+}
+
+#card-content .item-card .item-hover .btn-left {
+ float: left;
+}
+
+#card-content .item-card .item-hover .btn-right {
+ float: right;
+}
+
+#card-content .item-card:hover .item-hover {
+ position: absolute;
+ width: 100%;
+ height: 100%;
+ top: 0px;
+ z-index: 1;
+}
 </style>
