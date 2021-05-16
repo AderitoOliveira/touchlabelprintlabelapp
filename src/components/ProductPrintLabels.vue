@@ -79,16 +79,18 @@
                         </div>
                         <div class="label-quantity">
                             <label class="control-label" for="orderId">Num. Encomenda</label>
-                            <div class="input-wrap-inner">
+                            <b-form-select v-model="b_form_selected" :options="ordersForProductsWithCounter"></b-form-select>
+                            <div class="mt-3">Selected: <strong>{{ b_form_selected }}</strong></div>
+                            <!--div class="input-wrap-inner">
                                 <input type="orderId" class="form-control" id="orderId" placeholder="Número da encomenda" v-model="orderId">
-                            </div>
+                            </div-->
                         </div>
                         <div class="label-quantity">
                             <label class="control-label" for="qtyBox">Contador Caixas</label>
                             <div class="input-wrap-inner">
                                 <div class="row">
                                     <div class="col-md-5">
-                                        <input type="boxCounterIntial" class="form-control" id="boxCounterIntial" placeholder="Num. etiqueta inicial" v-model="boxCounterIntial">
+                                        <input type="boxCounterInitial" class="form-control" id="boxCounterInitial" placeholder="Num. etiqueta inicial" v-model="boxCounterInitial">
                                     </div>
                                     <div class="col-md-2 offset-md-3">
                                         <input type="boxCounterFinal" class="form-control" id="boxCounterFinal" placeholder="Num. etiqueta final" v-model="boxCounterFinal">
@@ -125,7 +127,6 @@
       :footer-class="(modal_action ? 'no_action' : 'action')"
        @ok="goToListProducts()"
        ok-only
-       :okVariant='danger'
     >
       <p class="my-4">{{modal.content}}</p>
     </b-modal>
@@ -153,6 +154,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const getProductLabelDetail = 'labelToPrintForProduct/'
+const getDropdownOrderId    = 'orderidfordropdowninlabel/'
 const searchProduct = 'getProduct/'
 
 export default {
@@ -161,11 +163,16 @@ export default {
     return {
       icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAIISURBVHgB7VfLccJADJUJd0gHBhogHUAJqQB3EK45YSogVBDoIB3gDuIGIL7mhCvAeQ9kxqzXH8iMM5Phzeyw2ZX0JK0kgjMYDCZJkryJSFeaQeQ4ju/0+/0v/OFKs4jbKelut3OkASDQBB/dlvwR7sSNoX2NsOu6bLkht61Wy9Xj+HA4hFEUBXIFahGDkEQv2Hpi6XfcsVpjbD/gxBxORFU2K1MNgwsYZq9PpXzI8M6jLHRmcisxo+z1ep9KeAamXICoxliP7H3ucbY21H3q0kaRfUcb+mKA8C3hOUlNxTnkfJsh2OH5zHAyxBoj83FG7shnjRikCwvpKiVlKrH2uhbquM9sZBUwk4dqK89hHiBaT05FdAGkdK2kNOTL6U25photI5znKcSDzVElsVZvDpl28SzXqU5o00Xks0pieB3blLWHS5F9SwP5FrQQz+26x8FBLC13a3VuZFNEFpeVxEyppT3O6dICo6FYFyt9qgQTyWO13W5XOXtF7QSiDavSkPchZ82IDg3fOI5QlE+124mCiPqZfWgSQ/E9TSkd5B7DYmOSUpfDpejdrREbkfhiDIYaWKbpt9grjjgLvik87+m7xyWivFtStog0i1rfTvpt43HP1KKI+PbHFgER77jCkna6jdhwIsBHIL/E/X+u/0/MPt5Lc7+bUkQPnU7nW0djU+Qx+F5/ADN8+ahyQQG5AAAAAElFTkSuQmCC',
       productLabel: {},
-      showPage: '',
+      ordersForProductsWithCounter: {},
+      showPage: 'true',
       customerProductId: '',
       image_base: imageBase,
       qtyArticle: '',
       qtyBox: '',
+      boxCounterInitial: 0,
+      boxCounterFinal: 0,
+      b_form_selected: '',
+      orderId: '',
       modal_action: false,
       modal_trigger: '',
       centermodal: ['centermodal'],
@@ -189,7 +196,22 @@ export default {
       //console.log(this.productLabel[0].LABEL_HAS_COUNTER)
     }, error => {
       console.error(error)
+    });
+
+    axios({ method: 'GET', 'url': sitebase + getDropdownOrderId + encodeURIComponent(this.customerProductId) }).then(result => {
+      this.ordersForProductsWithCounter = result.data;
+      console.log("this.ordersForProductsWithCounter: " + this.ordersForProductsWithCounter)
+      if ( this.ordersForProductsWithCounter.length == 0) 
+      {
+          this.showPage='false'
+          this.launchModal()
+      }
+      //console.log(this.productLabel[0].LABEL_HAS_COUNTER)
+    }, error => {
+      console.error(error)
     })
+
+
   },
   computed: {
     
