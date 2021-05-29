@@ -22,8 +22,8 @@
         </div>
         <div class="row">
           <div class="col-md-12">
-            <div v-if="showSearch" class="search-wrap">
-                    <input type="text" class="form-control"  v-on:keyup="updateLen" v-model="search" placeholder="Pesquise pelo número da encomenda...">
+            <div class="search-wrap">
+                    <input type="text" class="form-control"  v-on:keyup="updateLen" v-model="search" placeholder="Pesquise pelo número do produto...">
             </div>
           </div>
         </div>
