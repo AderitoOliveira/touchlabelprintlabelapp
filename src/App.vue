@@ -13,7 +13,7 @@
           </defs>
           </svg>
         </a>
-        <button type="button" class="btn btn-lg btn-warning float-right" @click="listProducts()">Pesquisar Produtos</button>
+        <!--button type="button" class="btn btn-lg btn-warning float-right" @click="listProducts()">Pesquisar Produtos</button-->
       </div>
     </div>
     <router-view/>

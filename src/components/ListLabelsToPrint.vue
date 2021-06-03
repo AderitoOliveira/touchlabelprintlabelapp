@@ -17,6 +17,11 @@
       <div class="outer-wrap">
         <div class="row">
           <div class="col-md-12">
+            <button type="button" class="btn btn-lg btn-warning float-right" @click="listProducts()">Pesquisar Produtos</button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
               <ul id="table-header">
                 <div class="row">
                   <li class="table-header-item col-md-1">
@@ -138,8 +143,10 @@ if (process.env.NODE_ENV === 'development') {
   sitebase = 'http://' + process.env.IP_ADDRESS + ':8080/',
   imageBase = 'http://' + process.env.IP_ADDRESS + ':8080'
 } else {
-  sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
-  imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com'
+  //sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
+  //imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com'
+  sitebase = 'http://192.168.1.17:8080/',
+  imageBase = 'http://192.168.1.17:8080'
 }
 
 const getLabels = 'getLabelsToPrint'
@@ -202,6 +209,9 @@ export default {
     }
   },
   methods: {
+    listProducts(){
+     this.$router.push('/listProducts'); 
+    },
     launchOverlay () {
       // this.isLoading = true
     },
