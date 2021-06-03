@@ -36,13 +36,13 @@
                     <div class="label-bottom">
                         <div class="label-options">
                             <div class="checkbox-wrap">
-                            <input id="label-type" name="label-type" class="special-checkbox" type="checkbox" ng-model="qtyLabelsByLine" ng-change=""/>
+                            <input id="label-type" name="label-type" class="special-checkbox" type="checkbox" v-model="qtyLabelsByLine"/>
                             <span class="checkbox-item"></span>
                             <label for="label-type">2 etiquetas por linha</label>
                             </div>
                         </div>
                         <div class="label-button">
-                            <button type="submit" ng-click="printLabelArticle(product.ARTICLE_PRINTER_IP_ADDRESS, product.ARTICLE_PRINTER_PORT, product.Bar_Code_Tech_Sheet, product.PRODUCT_NAME_FOR_LABEL, product.CUSTOMER_PRODUCT_ID, product.ZPL_STRING_ARTICLE, product.ZPL_STRING_ARTICLE_2_COLUMNS_1_LABEL, product.ZPL_STRING_ARTICLE_2_COLUMNS_MULTIPLE_LABEL, product.ARTICLE_BARCODE_TYPE, qtyArticle, qtyLabelsByLine)" class="btn btn-default btn-save"><img src="../assets/icons/symbol-print.svg" width="20px" height="18px" />Imprimir</button>
+                            <button type="submit" @click="printLabelArticle(qtyArticle, qtyLabelsByLine)" class="btn btn-default btn-save"><img src="../assets/icons/symbol-print.svg" width="20px" height="18px" />Imprimir</button>
                         </div>
                     </div>
                     </div>
@@ -65,7 +65,7 @@
                         </div>
                         <div class="label-bottom">
                             <div class="label-button">
-                                <button type="submit" @click="printBoxLabels(product.BOX_PRINTER_IP_ADDRESS, product.BOX_PRINTER_PORT, product.Bar_Code_Tech_Sheet, product.PRODUCT_NAME_FOR_LABEL, product.CUSTOMER_PRODUCT_ID, product.ZPL_STRING_BOX, product.BOX_BARCODE_TYPE, product.Qty_By_Box, qtyBox)" class="btn btn-default btn-save"><img src="../assets/icons/symbol-print.svg" width="20px" height="18px" />Imprimir</button>
+                                <button type="submit" @click="printBoxLabels(null, null, null, qtyBox)" class="btn btn-default btn-save"><img src="../assets/icons/symbol-print.svg" width="20px" height="18px" />Imprimir</button>
                             </div>
                         </div>
                     </div>
@@ -106,7 +106,7 @@
                         <div class="label-bottom">
                             <div class="label-button">
                                 <!--button type="submit" ng-click="printLabelBox(this.productLabel[0].BOX_PRINTER_IP_ADDRESS, this.productLabel[0].BOX_PRINTER_PORT, this.productLabel[0].Bar_Code_Tech_Sheet, this.productLabel[0].PRODUCT_NAME_FOR_LABEL, this.productLabel[0].CUSTOMER_PRODUCT_ID, this.productLabel[0].ZPL_STRING_BOX, this.productLabel[0].BOX_BARCODE_TYPE, this.productLabel[0].Qty_By_Box, b_form_selected)" class="btn btn-default btn-save"><img src="../assets/icons/symbol-print.svg" width="20px" height="18px" />Imprimir</button-->
-                                <button type="submit" @click="printBoxLabels(b_form_selected, boxCounterInitial, boxCounterFinal)" class="btn btn-default btn-save"><img src="../assets/icons/symbol-print.svg" width="20px" height="18px" />Imprimir</button>
+                                <button type="submit" @click="printBoxLabels(b_form_selected, boxCounterInitial, boxCounterFinal, null)" class="btn btn-default btn-save"><img src="../assets/icons/symbol-print.svg" width="20px" height="18px" />Imprimir</button>
 
                             </div>
                         </div>
@@ -168,6 +168,7 @@ export default {
       ordersForProductsWithCounter: {},
       showPage: 'true',
       showLabelBoxCounter: 'false',
+      qtyLabelsByLine: false,
       customerProductId: '',
       image_base: imageBase,
       qtyArticle: '',
@@ -256,9 +257,19 @@ export default {
       }
       return str
     },
+    reverseString (data) {
+      var rev = [];
+      let revStr = ''
+      for (let i = data.length - 1, j = 0; i >= 0; i--, j++) {
+          rev[j] = data[i];
+      }
+      revStr = rev.join('');
+      return revStr;
+    },
     eanCheckDigit (barCode) {
+      alert("barCode inside eanCheckDigit: " + barCode) 
       let result = 0
-      let rs = barCode.reverse()
+      let rs = this.reverseString(barCode)
       for (let counter = 0; counter < rs.length; counter++) {
         result = result + parseInt(rs.charAt(counter)) * Math.pow(3, ((counter + 1) % 2))
       }
@@ -284,6 +295,7 @@ export default {
 
       console.log('sending...')
       request.timeout = 100
+      console.log('ZPL:' + zpl)
       request.send(zpl)
       // request.done;
 
@@ -312,7 +324,7 @@ export default {
         let sendToPrinterAllLabels = this.replaceAll(zplStringAux, map)
         this.sendZplToPrinter(printerIPAddress, printerPort, sendToPrinterAllLabels)
         zplStringAux = zplString
-        console.log('ZPL_FINAL:' + sendToPrinterAllLabels)
+        //console.log('ZPL_FINAL:' + sendToPrinterAllLabels)
         console.log('*******************************************************************************************')
 
         await this.timer(500) // then the created Promise can be awaited // COMMENTED FOR REMOVING SPPINNER
@@ -330,15 +342,9 @@ export default {
 
       // this.$refs['modal-paint-2'].show() // ADDED FOR REMOVING SPPINNER
     },
-    async printLabelArticle (uniqueId, customerProductId, orderId, quantityArticleLabels, boxLabelAlreadyPrinted) {
-      // console.log(uniqueId)
-      // console.log(customerProductId)
+    async printLabelArticle (numberOfLabelsToPrint, qtyLabelsByLine) {
 
-      let labelToPrintDetails = await this.getLabelToPrintDetails(customerProductId)
-      // let K = JSON.parse(JSON.stringify(labelToPrintDetails))
-      // console.log('X: ' + JSON.stringify(labelToPrintDetails))
-      // console.log('CUSTOMER_PRODUCT_ID: ' + this.productLabel[0].CUSTOMER_PRODUCT_ID)
-      // console.log('XPTO')
+      let customerProductId = this.productLabel[0].CUSTOMER_PRODUCT_ID
       let barCodeNumber = this.productLabel[0].Bar_Code_Tech_Sheet
       let productNameForLabel = this.productLabel[0].PRODUCT_NAME_FOR_LABEL
       let ZPLString = this.productLabel[0].ZPL_STRING_ARTICLE
@@ -351,7 +357,7 @@ export default {
       let printerPort = this.productLabel[0].ARTICLE_PRINTER_PORT
       let labelHasCounter = this.productLabel[0].LABEL_HAS_COUNTER
       let numberLabelsOnArticle = this.productLabel[0].NUMBER_LABELS_ON_ARTICLE
-      let labelsWith2Columns = this.productLabel[0].ARTICLE_LABEL_WITH_2_COLUMNS
+      let labelsWith2Columns = qtyLabelsByLine
       let checkDigit = 0
       let eanWithCheckDigit = 0
       let quantityToReplace = 0
@@ -370,7 +376,7 @@ export default {
       }
 
       if (labelHasCounter === 'true') {
-        quantityArticleLabels = quantityArticleLabels * numberLabelsOnArticle
+        numberOfLabelsToPrint = numberOfLabelsToPrint * numberLabelsOnArticle
       }
 
       let mapTestLabel = {
@@ -403,15 +409,15 @@ export default {
         }
       }
 
-      if (labelsWith2Columns === 'false') {
+      if (labelsWith2Columns == false) {
         // The _PRINT_QUANTITY in the map can only be changed directly
-        map._PRINT_QUANTITY = quantityArticleLabels
+        map._PRINT_QUANTITY = numberOfLabelsToPrint
         sendToPrinter = this.replaceAll(ZPLString, map)
         console.log('labelsWith2Columns === false: sendToPrinter: ' + sendToPrinter)
         sendToPrinterTest = this.replaceAll(zplStringTest, mapTestLabel)
       } else {
-        if (quantityArticleLabels === 1) {
-          console.log('quantityArticleLabels === 1: sendToPrinter: ' + sendToPrinter)
+        if (numberOfLabelsToPrint === 1) {
+          console.log('numberOfLabelsToPrint === 1: sendToPrinter: ' + sendToPrinter)
           // ZPL_STRING_ARTICLE_2_COLUMNS_1_LABEL  --> Only 1 label is written and the other is blank
           // ZPL_STRING_ARTICLE_2_COLUMNS_MULTIPLE_LABEL --> Both Labels are written
           map._PRINT_QUANTITY = 1
@@ -420,20 +426,20 @@ export default {
           sendToPrinterTest = this.replaceAll(ZPL_STRING_ARTICLE_2_COLUMNS_1_LABEL_TEST, mapTestLabel)
           return
         }
-        if (quantityArticleLabels % 2 === 0) {
-          console.log('quantityArticleLabels: ' + quantityArticleLabels)
-          map._PRINT_QUANTITY = quantityArticleLabels / 2
+        if (numberOfLabelsToPrint % 2 === 0) {
+          console.log('numberOfLabelsToPrint: ' + numberOfLabelsToPrint)
+          map._PRINT_QUANTITY = numberOfLabelsToPrint / 2
           mapTestLabel._PRINT_QUANTITY = 2
           sendToPrinter = this.replaceAll(ZPL_STRING_ARTICLE_2_COLUMNS_MULTIPLE_LABEL, map)
-          console.log('quantityArticleLabels % 2 === 0: sendToPrinter: ' + sendToPrinter)
+          console.log('numberOfLabelsToPrint % 2 === 0: sendToPrinter: ' + sendToPrinter)
           sendToPrinterTest = this.replaceAll(ZPL_STRING_ARTICLE_2_COLUMNS_1_LABEL_TEST, mapTestLabel)
         }
-        if (quantityArticleLabels % 2 !== 0) {
-          console.log('quantityArticleLabels: ' + quantityArticleLabels)
-          map._PRINT_QUANTITY = Math.ceil(quantityArticleLabels / 2)
+        if (numberOfLabelsToPrint % 2 !== 0) {
+          console.log('numberOfLabelsToPrint: ' + numberOfLabelsToPrint)
+          map._PRINT_QUANTITY = Math.ceil(numberOfLabelsToPrint / 2)
           mapTestLabel._PRINT_QUANTITY = 2
           sendToPrinter = this.replaceAll(ZPL_STRING_ARTICLE_2_COLUMNS_MULTIPLE_LABEL_TEST, map)
-          console.log('quantityArticleLabels % 2 !== 0: sendToPrinter: ' + sendToPrinter)
+          console.log('numberOfLabelsToPrint % 2 !== 0: sendToPrinter: ' + sendToPrinter)
           sendToPrinterTest = this.replaceAll(ZPL_STRING_ARTICLE_2_COLUMNS_1_LABEL_TEST, mapTestLabel)
 
           map._PRINT_QUANTITY = 1
@@ -441,27 +447,9 @@ export default {
         }
       }
 
-      this.sendZplToPrinter(printerIPAddress, printerPort, sendToPrinterTest)
-
-      /* this.first_modal_action_object = {
-        'zpl_to_print': sendToPrinter,
-        'printer_ip_address': printerIPAddress,
-        'printer_port': printerPort,
-        'labelBeingPrinted': 'article',
-        'uniqueId': uniqueId,
-        'orderId': orderId,
-        'customerProductId': customerProductId,
-        'articleLabelAlreadyPrinted': 'false',
-        'boxLabelAlreadyPrinted': boxLabelAlreadyPrinted,
-        'labelHasCounter': labelHasCounter,
-        'totalLabelsToPrint': quantityArticleLabels,
-        'quantityArticleLabels': quantityArticleLabels
-      } */
-
-      //this.launchModal('article')
-
+      this.sendZplToPrinter(printerIPAddress, printerPort, sendToPrinter)
     },
-    async printBoxLabels (orderId, counterInitialNumber, counterFinalNumber) {
+    async printBoxLabels (orderId, counterInitialNumber, counterFinalNumber, numberOfLabelsToPrint) {
 
       let customerProductId = this.productLabel[0].CUSTOMER_PRODUCT_ID
       let barCodeNumber = this.productLabel[0].Bar_Code_Tech_Sheet
@@ -473,7 +461,6 @@ export default {
       let printerIPAddress = this.productLabel[0].BOX_PRINTER_IP_ADDRESS
       let printerPort = this.productLabel[0].BOX_PRINTER_PORT
       let labelHasCounter = this.productLabel[0].LABEL_HAS_COUNTER
-      let quantityBoxLabels = counterFinalNumber
       let numberLabelsOnBox = this.productLabel[0].NUMBER_LABELS_ON_BOX
       let FullEan = ''
       let checkDigit = ''
@@ -481,6 +468,13 @@ export default {
       let quantityFull = ''
       let sendToPrinterTestLabel = ''
       let sendToPrinterAllLabels = ''
+      let quantityBoxLabels = 0
+
+      if(numberOfLabelsToPrint != null) {
+        quantityBoxLabels = numberOfLabelsToPrint
+      } else {
+        quantityBoxLabels = counterFinalNumber
+      }
 
       if (labelHasCounter === 'false') {
         if (boxBarCodeType === 'GS1-128') {
@@ -520,11 +514,11 @@ export default {
             '_PRINT_QUANTITY': 1
           }
 
-          sendToPrinterTestLabel = this.replaceAll(zplStringTestLabel, mapTestLabel)
+          //sendToPrinterTestLabel = this.replaceAll(zplStringTestLabel, mapTestLabel)
 
           sendToPrinterAllLabels = this.replaceAll(zplStringAllLabels, map)
 
-          this.sendZplToPrinter(printerIPAddress, printerPort, sendToPrinterTestLabel)
+          this.sendZplToPrinter(printerIPAddress, printerPort, sendToPrinterAllLabels)
         }
 
         if (boxBarCodeType === 'EAN13') {
@@ -574,30 +568,13 @@ export default {
             }
           }
 
-          sendToPrinterTestLabel = this.replaceAll(zplStringTestLabel, mapTestLabel)
+          //sendToPrinterTestLabel = this.replaceAll(zplStringTestLabel, mapTestLabel)
 
           sendToPrinterAllLabels = this.replaceAll(zplStringAllLabels, map)
 
-          this.sendZplToPrinter(printerIPAddress, printerPort, sendToPrinterTestLabel)
+          this.sendZplToPrinter(printerIPAddress, printerPort, sendToPrinterAllLabels)
         }
 
-        /* this.first_modal_action_object = {
-          'zpl_to_print': sendToPrinterAllLabels,
-          'printer_ip_address': printerIPAddress,
-          'printer_port': printerPort,
-          'labelBeingPrinted': 'box',
-          'uniqueId': uniqueId,
-          'orderId': orderId,
-          'customerProductId': customerProductId,
-          'articleLabelAlreadyPrinted': articleLabelAlreadyPrinted,
-          'boxLabelAlreadyPrinted': 'false',
-          'labelHasCounter': labelHasCounter,
-          'totalLabelsToPrint': quantityBoxLabels,
-          'quantityArticleLabels': quantityBoxLabels,
-          'quantity_box_labels': quantityBoxLabels
-        } */
-
-        // this.launchModal('box')
       } else { // THE LABEL HAS A COUNTER
         // We need to remove the first digit to calculate the checksum for the EAN-13
         if (barCodeNumber.charAt(0) === '0') {
@@ -650,32 +627,13 @@ export default {
 
         //let digitsForPadding = totalLabelsToPrint.toString().length
 
-        sendToPrinterTestLabel = this.replaceAll(zplStringTestLabel, mapTestLabel)
+        //sendToPrinterTestLabel = this.replaceAll(zplStringTestLabel, mapTestLabel)
 
         sendToPrinterAllLabels = this.replaceAll(zplStringAllLabels, map)
 
         //await this.executeCycleToPrintLabels(sendToPrinterAllLabels, totalLabelsToPrint, digitsForPadding, printerIPAddress, printerPort)
         await this.executeCycleToPrintLabels(sendToPrinterAllLabels, counterInitialNumber, counterFinalNumber, printerIPAddress, printerPort)
 
-        // this.sendZplToPrinter(printerIPAddress, printerPort, sendToPrinterTestLabel)
-
-        /* this.first_modal_action_object = {
-          'zpl_to_print': sendToPrinterAllLabels,
-          'printer_ip_address': printerIPAddress,
-          'printer_port': printerPort,
-          'labelBeingPrinted': 'box',
-          'uniqueId': uniqueId,
-          'orderId': orderId,
-          'customerProductId': customerProductId,
-          'articleLabelAlreadyPrinted': articleLabelAlreadyPrinted,
-          'boxLabelAlreadyPrinted': 'false',
-          'labelHasCounter': labelHasCounter,
-          'totalLabelsToPrint': quantityBoxLabels,
-          'quantityArticleLabels': quantityBoxLabels,
-          'quantity_box_labels': quantityBoxLabels
-        } */
-
-        //this.launchModal('box')
       }
     }
   }

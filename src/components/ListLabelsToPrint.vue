@@ -126,10 +126,7 @@
 
 <script>
 import axios from 'axios'
-// import { request } from 'http'
-// Import component
 import Loading from 'vue-loading-overlay'
-// Import stylesheet
 import 'vue-loading-overlay/dist/vue-loading.css'
 
 import Spinner from 'vue-simple-spinner'
