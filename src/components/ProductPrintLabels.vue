@@ -310,7 +310,7 @@ export default {
 
       console.log('end')
     },
-    async executeCycleToPrintLabels (zplString, counterInitialNumber, counterFinalNumber, printerIPAddress, printerPort) { // We need to wrap the loop into an async function for this to work
+    async executeCycleToPrintLabels (zplString, counterInitialNumber, counterFinalNumber, printerIPAddress, printerPort, executeCycleToPrintLabels) { // We need to wrap the loop into an async function for this to work
       let zplStringAux = zplString
       let totalLabelsToPrint = counterFinalNumber - counterInitialNumber
 
@@ -336,7 +336,7 @@ export default {
         //console.log('ZPL_FINAL:' + sendToPrinterAllLabels)
         console.log('*******************************************************************************************')
 
-        await this.timer(500) // then the created Promise can be awaited // COMMENTED FOR REMOVING SPPINNER
+        await this.timer(executeCycleToPrintLabels) // then the created Promise can be awaited // COMMENTED FOR REMOVING SPPINNER
 
         timeToWait = timeToWait - 2
         // this.loadSimpleSpinnerMessage = 'Faltam ' + timeToWait + ' segundos para terminar a impressão'
@@ -471,6 +471,7 @@ export default {
       let printerPort = this.productLabel[0].BOX_PRINTER_PORT
       let labelHasCounter = this.productLabel[0].LABEL_HAS_COUNTER
       let numberLabelsOnBox = this.productLabel[0].NUMBER_LABELS_ON_BOX
+      let boxLabelPrintDelay = this.productLabel[0].LABEL_WITH_COUNTER_PRINT_DELAY
       let FullEan = ''
       let checkDigit = ''
       let EanWithCheckDigit = ''
@@ -641,7 +642,7 @@ export default {
         sendToPrinterAllLabels = this.replaceAll(zplStringAllLabels, map)
 
         //await this.executeCycleToPrintLabels(sendToPrinterAllLabels, totalLabelsToPrint, digitsForPadding, printerIPAddress, printerPort)
-        await this.executeCycleToPrintLabels(sendToPrinterAllLabels, counterInitialNumber, counterFinalNumber, printerIPAddress, printerPort)
+        await this.executeCycleToPrintLabels(sendToPrinterAllLabels, counterInitialNumber, counterFinalNumber, printerIPAddress, printerPort, boxLabelPrintDelay)
 
       }
     }
