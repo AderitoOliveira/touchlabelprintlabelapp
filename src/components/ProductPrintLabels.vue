@@ -77,13 +77,16 @@
                         <div class="label-title">
                             Etiquetas de Caixa
                         </div>
-                        <div class="label-quantity">
+                        <div class="label-quantity" v-if="labelHasCounterButNoCurrentOrders == false">
                             <label class="control-label" for="orderId">Num. Encomenda</label>
                             <b-form-select v-model="b_form_selected" :options="ordersForProductsWithCounter"></b-form-select>
-                            <!--div class="mt-3">Selected: <strong>{{ b_form_selected }}</strong></div-->
-                            <!--div class="input-wrap-inner">
-                                <input type="orderId" class="form-control" id="orderId" placeholder="Número da encomenda" v-model="orderId">
-                            </div-->
+                            
+                        </div>
+                        <div class="label-quantity" v-if="labelHasCounterButNoCurrentOrders == true">
+                            <label class="control-label" for="orderId">Num. Encomenda</label>
+                            <div class="input-wrap-inner">
+                                <input type="orderNumber" class="form-control" id="orderNumber" placeholder="Número Encomenda" v-model="orderNumber">
+                            </div>
                         </div>
                         <div class="label-quantity">
                             <label class="control-label" for="qtyBox">Contador Caixas</label>
@@ -104,10 +107,13 @@
                         <img class="label-detail" src="../assets/icons/bc_label_box.svg" width="244px" height="129px">
                         </div>
                         <div class="label-bottom">
-                            <div class="label-button">
+                            <div class="label-button" v-if="labelHasCounterButNoCurrentOrders == false">
                                 <!--button type="submit" ng-click="printLabelBox(this.productLabel[0].BOX_PRINTER_IP_ADDRESS, this.productLabel[0].BOX_PRINTER_PORT, this.productLabel[0].Bar_Code_Tech_Sheet, this.productLabel[0].PRODUCT_NAME_FOR_LABEL, this.productLabel[0].CUSTOMER_PRODUCT_ID, this.productLabel[0].ZPL_STRING_BOX, this.productLabel[0].BOX_BARCODE_TYPE, this.productLabel[0].Qty_By_Box, b_form_selected)" class="btn btn-default btn-save"><img src="../assets/icons/symbol-print.svg" width="20px" height="18px" />Imprimir</button-->
                                 <button type="submit" @click="printBoxLabels(b_form_selected, boxCounterInitial, boxCounterFinal, null)" class="btn btn-default btn-save"><img src="../assets/icons/symbol-print.svg" width="20px" height="18px" />Imprimir</button>
-
+                            </div>
+                            <div class="label-button" v-if="labelHasCounterButNoCurrentOrders == true">
+                                <!--button type="submit" ng-click="printLabelBox(this.productLabel[0].BOX_PRINTER_IP_ADDRESS, this.productLabel[0].BOX_PRINTER_PORT, this.productLabel[0].Bar_Code_Tech_Sheet, this.productLabel[0].PRODUCT_NAME_FOR_LABEL, this.productLabel[0].CUSTOMER_PRODUCT_ID, this.productLabel[0].ZPL_STRING_BOX, this.productLabel[0].BOX_BARCODE_TYPE, this.productLabel[0].Qty_By_Box, b_form_selected)" class="btn btn-default btn-save"><img src="../assets/icons/symbol-print.svg" width="20px" height="18px" />Imprimir</button-->
+                                <button type="submit" @click="printBoxLabels(orderNumber, boxCounterInitial, boxCounterFinal, null)" class="btn btn-default btn-save"><img src="../assets/icons/symbol-print.svg" width="20px" height="18px" />Imprimir</button>
                             </div>
                         </div>
                     </div>
@@ -151,8 +157,10 @@ if (process.env.NODE_ENV === 'development') {
   sitebase = 'http://' + process.env.IP_ADDRESS + ':8080/',
   imageBase = 'http://' + process.env.IP_ADDRESS + ':8080/images/'
 } else {
-  sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
-  imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com'
+  //sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
+  //imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com'
+  sitebase = 'http://192.168.1.8:8080/',
+  imageBase = 'http://192.168.1.8:8080/images/'
 }
 
 const getProductLabelDetail = 'labelToPrintForProduct/'
@@ -166,6 +174,7 @@ export default {
       icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAIISURBVHgB7VfLccJADJUJd0gHBhogHUAJqQB3EK45YSogVBDoIB3gDuIGIL7mhCvAeQ9kxqzXH8iMM5Phzeyw2ZX0JK0kgjMYDCZJkryJSFeaQeQ4ju/0+/0v/OFKs4jbKelut3OkASDQBB/dlvwR7sSNoX2NsOu6bLkht61Wy9Xj+HA4hFEUBXIFahGDkEQv2Hpi6XfcsVpjbD/gxBxORFU2K1MNgwsYZq9PpXzI8M6jLHRmcisxo+z1ep9KeAamXICoxliP7H3ucbY21H3q0kaRfUcb+mKA8C3hOUlNxTnkfJsh2OH5zHAyxBoj83FG7shnjRikCwvpKiVlKrH2uhbquM9sZBUwk4dqK89hHiBaT05FdAGkdK2kNOTL6U25photI5znKcSDzVElsVZvDpl28SzXqU5o00Xks0pieB3blLWHS5F9SwP5FrQQz+26x8FBLC13a3VuZFNEFpeVxEyppT3O6dICo6FYFyt9qgQTyWO13W5XOXtF7QSiDavSkPchZ82IDg3fOI5QlE+124mCiPqZfWgSQ/E9TSkd5B7DYmOSUpfDpejdrREbkfhiDIYaWKbpt9grjjgLvik87+m7xyWivFtStog0i1rfTvpt43HP1KKI+PbHFgER77jCkna6jdhwIsBHIL/E/X+u/0/MPt5Lc7+bUkQPnU7nW0djU+Qx+F5/ADN8+ahyQQG5AAAAAElFTkSuQmCC',
       productLabel: {},
       ordersForProductsWithCounter: {},
+      labelHasCounterButNoCurrentOrders: false,
       showPage: 'true',
       showLabelBoxCounter: 'false',
       qtyLabelsByLine: false,
@@ -177,6 +186,7 @@ export default {
       boxCounterFinal:'',
       b_form_selected: '',
       orderId: '',
+      orderNumber: '',
       modal_action: false,
       modal_trigger: '',
       centermodal: ['centermodal'],
@@ -215,11 +225,10 @@ export default {
     axios({ method: 'GET', 'url': sitebase + getDropdownOrderId + encodeURIComponent(this.customerProductId) }).then(result => {
       this.ordersForProductsWithCounter = result.data;
       console.log("this.ordersForProductsWithCounter: " + JSON.stringify(this.ordersForProductsWithCounter))
-     // if ( this.ordersForProductsWithCounter.length == 0) 
-     // {
-     //     this.showPage='false'
-     //     this.launchModal()
-     // }
+      if ( this.ordersForProductsWithCounter.length == 0) 
+      {
+          this.labelHasCounterButNoCurrentOrders = true
+      }
       //console.log(this.productLabel[0].LABEL_HAS_COUNTER)
     }, error => {
       console.error(error)
@@ -301,7 +310,7 @@ export default {
 
       console.log('end')
     },
-    async executeCycleToPrintLabels (zplString, counterInitialNumber, counterFinalNumber, printerIPAddress, printerPort) { // We need to wrap the loop into an async function for this to work
+    async executeCycleToPrintLabels (zplString, counterInitialNumber, counterFinalNumber, printerIPAddress, printerPort, executeCycleToPrintLabels) { // We need to wrap the loop into an async function for this to work
       let zplStringAux = zplString
       let totalLabelsToPrint = counterFinalNumber - counterInitialNumber
 
@@ -327,7 +336,7 @@ export default {
         //console.log('ZPL_FINAL:' + sendToPrinterAllLabels)
         console.log('*******************************************************************************************')
 
-        await this.timer(500) // then the created Promise can be awaited // COMMENTED FOR REMOVING SPPINNER
+        await this.timer(executeCycleToPrintLabels) // then the created Promise can be awaited // COMMENTED FOR REMOVING SPPINNER
 
         timeToWait = timeToWait - 2
         // this.loadSimpleSpinnerMessage = 'Faltam ' + timeToWait + ' segundos para terminar a impressão'
@@ -462,6 +471,7 @@ export default {
       let printerPort = this.productLabel[0].BOX_PRINTER_PORT
       let labelHasCounter = this.productLabel[0].LABEL_HAS_COUNTER
       let numberLabelsOnBox = this.productLabel[0].NUMBER_LABELS_ON_BOX
+      let boxLabelPrintDelay = this.productLabel[0].LABEL_WITH_COUNTER_PRINT_DELAY
       let FullEan = ''
       let checkDigit = ''
       let EanWithCheckDigit = ''
@@ -632,7 +642,7 @@ export default {
         sendToPrinterAllLabels = this.replaceAll(zplStringAllLabels, map)
 
         //await this.executeCycleToPrintLabels(sendToPrinterAllLabels, totalLabelsToPrint, digitsForPadding, printerIPAddress, printerPort)
-        await this.executeCycleToPrintLabels(sendToPrinterAllLabels, counterInitialNumber, counterFinalNumber, printerIPAddress, printerPort)
+        await this.executeCycleToPrintLabels(sendToPrinterAllLabels, counterInitialNumber, counterFinalNumber, printerIPAddress, printerPort, boxLabelPrintDelay)
 
       }
     }

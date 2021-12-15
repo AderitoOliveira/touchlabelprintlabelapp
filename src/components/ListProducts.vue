@@ -4,7 +4,7 @@
       <div class="outer-wrap">
         <div class="row">
           <div class="col-md-12">
-              <ul id="table-header">
+              <!--ul id="table-header"-->
                 <!--div class="row">
                   <li class="table-header-item col-md-11">
 
@@ -20,7 +20,7 @@
 
               <button type="button" class="btn btn-lg btn-warning float-right" @click="listLabels()">Listar Etiquetas</button>
 
-              </ul>
+              <!--/ul-->
           </div>
         </div>
         <div class="row">
@@ -108,8 +108,8 @@ if (process.env.NODE_ENV === 'development') {
 } else {
   //sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
   //imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com'
-  sitebase = 'http://192.168.1.17:8080/',
-  imageBase = 'http://192.168.1.17:8080'
+  sitebase = 'http://192.168.1.8:8080/',
+  imageBase = 'http://192.168.1.8:8080/images/'
 }
 
 const getProducts = 'firstProducts'
