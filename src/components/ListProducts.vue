@@ -165,7 +165,7 @@ export default {
         this.searchFilterDebounce()
       }, 800),
     searchFilterDebounce () {
-      alert(this.search)
+      //alert(this.search)
       if (this.search !== '') {
         axios({ method: 'GET', 'url': sitebase + searchProduct + encodeURIComponent(this.search) }).then(result => {
           this.products = result.data;
@@ -182,7 +182,7 @@ export default {
           }
     },
     printProductLabel (customerProductId) {
-      alert(customerProductId)
+      //alert(customerProductId)
       this.$router.push({ name: 'ProductPrintLabels', params: { customerProductId } })
     }
   }

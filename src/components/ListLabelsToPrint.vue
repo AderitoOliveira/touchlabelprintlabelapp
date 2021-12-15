@@ -143,10 +143,10 @@ if (process.env.NODE_ENV === 'development') {
   sitebase = 'http://' + process.env.IP_ADDRESS + ':8080/',
   imageBase = 'http://' + process.env.IP_ADDRESS + ':8080'
 } else {
-  //sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
-  //imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com'
-  sitebase = 'http://192.168.1.17:8080/',
-  imageBase = 'http://192.168.1.17:8080'
+  sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
+  imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com'
+  //sitebase = 'http://192.168.1.17:8080/',
+  //imageBase = 'http://192.168.1.17:8080'
 }
 
 const getLabels = 'getLabelsToPrint'
@@ -257,7 +257,7 @@ export default {
     timer (ms) {
       return new Promise(resolve => setTimeout(resolve, ms))
     },
-    async executeCycleToPrintLabels (zplString, totalLabelsToPrint, digitsForPadding, printerIPAddress, printerPort) { // We need to wrap the loop into an async function for this to work
+    async executeCycleToPrintLabels (zplString, totalLabelsToPrint, digitsForPadding, printerIPAddress, printerPort, labelWithCounterPrintDelay) { // We need to wrap the loop into an async function for this to work
       let zplStringAux = zplString
 
       console.log('Inside executeCycleToPrintLabels')
@@ -281,7 +281,7 @@ export default {
         console.log('ZPL_FINAL:' + sendToPrinterAllLabels)
         console.log('*******************************************************************************************')
 
-        await this.timer(500) // then the created Promise can be awaited // COMMENTED FOR REMOVING SPPINNER
+        await this.timer(labelWithCounterPrintDelay) // then the created Promise can be awaited // COMMENTED FOR REMOVING SPPINNER
 
         timeToWait = timeToWait - 2
         // this.loadSimpleSpinnerMessage = 'Faltam ' + timeToWait + ' segundos para terminar a impressão'
@@ -316,6 +316,7 @@ export default {
       let labelHasCounter = this.first_modal_action_object.labelHasCounter
       let totalLabelsToPrint = this.first_modal_action_object.totalLabelsToPrint
       let quantityArticleLabels = this.first_modal_action_object.quantityArticleLabels
+      let labelWithCounterPrintDelay = this.first_modal_action_object.labelWithCounterPrintDelay
 
       if (this.actiontype === 'article') {
         this.modal = {
@@ -398,7 +399,7 @@ export default {
         console.log('THE LABEL HAS A COUNTER')
         // Returns a Promise that resolves after "ms" Milliseconds
 
-        await this.executeCycleToPrintLabels(zplString, totalLabelsToPrint, digitsForPadding, printerIPAddress, printerPort)
+        await this.executeCycleToPrintLabels(zplString, totalLabelsToPrint, digitsForPadding, printerIPAddress, printerPort, labelWithCounterPrintDelay)
 
         // IF THE ARTICLE LABELS WHERE ALREADY PRINTED, THEN THIS RECORD SHOULD BE DELETED
         if (labelBeingPrinted === 'box') {
@@ -663,6 +664,7 @@ export default {
       let labelHasCounter = labelToPrintDetails[0].LABEL_HAS_COUNTER
       let numberLabelsOnArticle = labelToPrintDetails[0].NUMBER_LABELS_ON_ARTICLE
       let numberLabelsOnBox = labelToPrintDetails[0].NUMBER_LABELS_ON_BOX
+      let labelWithCounterPrintDelay = labelToPrintDetails[0].LABEL_WITH_COUNTER_PRINT_DELAY
       let FullEan = ''
       let checkDigit = ''
       let EanWithCheckDigit = ''
@@ -782,7 +784,8 @@ export default {
           'labelHasCounter': labelHasCounter,
           'totalLabelsToPrint': quantityBoxLabels,
           'quantityArticleLabels': quantityBoxLabels,
-          'quantity_box_labels': quantityBoxLabels
+          'quantity_box_labels': quantityBoxLabels,
+          'labelWithCounterPrintDelay' : labelWithCounterPrintDelay
         }
 
         this.launchModal('box')
@@ -855,7 +858,8 @@ export default {
           'labelHasCounter': labelHasCounter,
           'totalLabelsToPrint': quantityBoxLabels,
           'quantityArticleLabels': quantityBoxLabels,
-          'quantity_box_labels': quantityBoxLabels
+          'quantity_box_labels': quantityBoxLabels,
+          'labelWithCounterPrintDelay' : labelWithCounterPrintDelay
         }
 
         this.launchModal('box')
