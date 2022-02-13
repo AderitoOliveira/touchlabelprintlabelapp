@@ -140,8 +140,10 @@ let sitebase
 let imageBase
 
 if (process.env.NODE_ENV === 'development') {
-  sitebase = 'http://' + process.env.IP_ADDRESS + ':8080/',
-  imageBase = 'http://' + process.env.IP_ADDRESS + ':8080'
+  //sitebase = 'http://' + process.env.IP_ADDRESS + ':8080/',
+  //imageBase = 'http://' + process.env.IP_ADDRESS + ':8080'
+  sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
+  imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/images/'
 } else {
   sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
   imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com'
@@ -331,7 +333,7 @@ export default {
           ok_button: 'Sim'
         }
       }
-      // this.$refs['modal-paint-2'].show()
+      this.$refs['modal-paint-2'].show()
 
       // START OF THE PRINT
 
@@ -397,9 +399,20 @@ export default {
         let digitsForPadding = totalLabelsToPrint.toString().length
 
         console.log('THE LABEL HAS A COUNTER')
-        // Returns a Promise that resolves after "ms" Milliseconds
+        
+        let counterValueTestLabel = this.padDigits(1, digitsForPadding) + ''
 
-        await this.executeCycleToPrintLabels(zplString, totalLabelsToPrint, digitsForPadding, printerIPAddress, printerPort, labelWithCounterPrintDelay)
+        let map = {
+          '_COUNTER_VALUE': counterValueTestLabel
+        }
+
+        let sendToPrinterAllLabels = this.replaceAll(zplString, map)
+
+        this.sendZplToPrinter(printerIPAddress, printerPort, sendToPrinterAllLabels)
+
+        console.log('ZPL_FINAL:' + sendToPrinterAllLabels)
+        // Returns a Promise that resolves after "ms" Milliseconds
+        //await this.executeCycleToPrintLabels(zplString, totalLabelsToPrint, digitsForPadding, printerIPAddress, printerPort, labelWithCounterPrintDelay)
 
         // IF THE ARTICLE LABELS WHERE ALREADY PRINTED, THEN THIS RECORD SHOULD BE DELETED
         if (labelBeingPrinted === 'box') {
@@ -805,7 +818,7 @@ export default {
           '_NUM_ARTIGO': customerProductId,
           '_ORDER_ID': orderId,
           '_QUANTIDADE': qtyByBox,
-          '_PRINT_QUANTITY': numberLabelsOnBox, // THIS IS THE NUMBER OF LABELS IN EACH BOX (2, 3, etc ...)
+          '_PRINT_QUANTITY': quantityBoxLabels, // Total of labels to print that will go in the ^PQ of the ZPL sent to the printer
           '_COUNTER_MAX_VALUE': quantityBoxLabels
         }
 

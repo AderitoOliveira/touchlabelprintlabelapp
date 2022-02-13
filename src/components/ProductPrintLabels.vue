@@ -154,13 +154,15 @@ let sitebase
 let imageBase
 
 if (process.env.NODE_ENV === 'development') {
-  sitebase = 'http://' + process.env.IP_ADDRESS + ':8080/',
-  imageBase = 'http://' + process.env.IP_ADDRESS + ':8080/images/'
+  //sitebase = 'http://' + process.env.IP_ADDRESS + ':8080/',
+  //imageBase = 'http://' + process.env.IP_ADDRESS + ':8080/images/'
+  sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
+  imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/images/'
 } else {
-  //sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
-  //imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com'
-  sitebase = 'http://192.168.1.8:8080/',
-  imageBase = 'http://192.168.1.8:8080/images/'
+  sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
+  imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/images/'
+  //sitebase = 'http://192.168.1.8:8080/',
+  //imageBase = 'http://192.168.1.8:8080/images/'
 }
 
 const getProductLabelDetail = 'labelToPrintForProduct/'
@@ -595,17 +597,20 @@ export default {
           EanWithCheckDigit = barCodeNumber
         }
 
+        let counterInitialNumberPadded = this.padDigits(counterInitialNumber, counterFinalNumber.toString().length) + '';
+        let totalLabelsToPrint= (counterFinalNumber - counterInitialNumber) + 1;
+
         let map = {
           '_EAN_CHECK_DIGIT': EanWithCheckDigit,
           '_QUANTIDADE_EXTENDIDA': quantityFull,
+          '_FULL_EAN': FullEan,
           '_NUM_ARTIGO': customerProductId,
           '_ORDER_ID': orderId,
           '_QUANTIDADE': qtyByBox,
-          '_PRINT_QUANTITY': numberLabelsOnBox, // THIS IS THE NUMBER OF LABELS IN EACH BOX (2, 3, etc ...)
-          '_COUNTER_MAX_VALUE': quantityBoxLabels
+          '_PRINT_QUANTITY': totalLabelsToPrint,
+          '_COUNTER_MAX_VALUE': counterFinalNumber,
+          '_COUNTER_VALUE': counterInitialNumberPadded
         }
-
-        let counterValueTestLabel = this.padDigits(1, quantityBoxLabels.toString().length) + ''
 
         let mapTestLabel = {
           '_EAN_CHECK_DIGIT': EanWithCheckDigit,
@@ -614,9 +619,9 @@ export default {
           '_NUM_ARTIGO': customerProductId,
           '_ORDER_ID': orderId,
           '_QUANTIDADE': qtyByBox,
-          '_PRINT_QUANTITY': 1,
-          '_COUNTER_MAX_VALUE': quantityBoxLabels,
-          '_COUNTER_VALUE': counterValueTestLabel
+          '_PRINT_QUANTITY': totalLabelsToPrint,
+          '_COUNTER_MAX_VALUE': counterFinalNumber,
+          '_COUNTER_VALUE': counterInitialNumberPadded
         }
 
         if (productNameForLabel.indexOf('\n') === -1) {
@@ -641,8 +646,11 @@ export default {
 
         sendToPrinterAllLabels = this.replaceAll(zplStringAllLabels, map)
 
-        //await this.executeCycleToPrintLabels(sendToPrinterAllLabels, totalLabelsToPrint, digitsForPadding, printerIPAddress, printerPort)
-        await this.executeCycleToPrintLabels(sendToPrinterAllLabels, counterInitialNumber, counterFinalNumber, printerIPAddress, printerPort, boxLabelPrintDelay)
+        console.log('ZPL_FINAL:' + sendToPrinterAllLabels)
+
+        this.sendZplToPrinter(printerIPAddress, printerPort, sendToPrinterAllLabels)
+
+        //await this.executeCycleToPrintLabels(sendToPrinterAllLabels, counterInitialNumber, counterFinalNumber, printerIPAddress, printerPort, boxLabelPrintDelay)
 
       }
     }
