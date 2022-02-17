@@ -143,7 +143,7 @@ if (process.env.NODE_ENV === 'development') {
   //sitebase = 'http://' + process.env.IP_ADDRESS + ':8080/',
   //imageBase = 'http://' + process.env.IP_ADDRESS + ':8080'
   sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
-  imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/images/'
+  imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/'
 } else {
   sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
   imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com'
@@ -812,17 +812,19 @@ export default {
           EanWithCheckDigit = barCodeNumber
         }
 
+        let labelsToPrint = quantityBoxLabels * numberLabelsOnBox;
+
         let map = {
           '_EAN_CHECK_DIGIT': EanWithCheckDigit,
           '_QUANTIDADE_EXTENDIDA': quantityFull,
           '_NUM_ARTIGO': customerProductId,
           '_ORDER_ID': orderId,
           '_QUANTIDADE': qtyByBox,
-          '_PRINT_QUANTITY': quantityBoxLabels, // Total of labels to print that will go in the ^PQ of the ZPL sent to the printer
+          '_PRINT_QUANTITY': labelsToPrint, // Total of labels to print that will go in the ^PQ of the ZPL sent to the printer
           '_COUNTER_MAX_VALUE': quantityBoxLabels
         }
 
-        let counterValueTestLabel = this.padDigits(1, quantityBoxLabels.toString().length) + ''
+        let counterValueTestLabel = this.padDigits(1, labelsToPrint.toString().length) + ''
 
         let mapTestLabel = {
           '_EAN_CHECK_DIGIT': EanWithCheckDigit,

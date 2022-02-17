@@ -598,7 +598,7 @@ export default {
         }
 
         let counterInitialNumberPadded = this.padDigits(counterInitialNumber, counterFinalNumber.toString().length) + '';
-        let totalLabelsToPrint= (counterFinalNumber - counterInitialNumber) + 1;
+        let totalLabelsToPrint= ((counterFinalNumber - counterInitialNumber) + 1) * numberLabelsOnBox;
 
         let map = {
           '_EAN_CHECK_DIGIT': EanWithCheckDigit,
