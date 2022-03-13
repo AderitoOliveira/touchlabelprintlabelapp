@@ -133,6 +133,7 @@
 import axios from 'axios'
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
+import moment from 'moment'
 
 import Spinner from 'vue-simple-spinner'
 
@@ -554,6 +555,8 @@ export default {
       let labelHasCounter = labelToPrintDetails[0].LABEL_HAS_COUNTER
       let numberLabelsOnArticle = labelToPrintDetails[0].NUMBER_LABELS_ON_ARTICLE
       let labelsWith2Columns = labelToPrintDetails[0].ARTICLE_LABEL_WITH_2_COLUMNS
+      let labelHasDate = labelToPrintDetails[0].LABEL_HAS_DATE;
+      let dateFormat = labelToPrintDetails[0].DATE_FORMAT;
       let checkDigit = 0
       let eanWithCheckDigit = 0
       let quantityToReplace = 0
@@ -603,6 +606,23 @@ export default {
           map['_ARTIGO_NOME_EXT_' + i] = productNameForLabelSplit[i]
           mapTestLabel['_ARTIGO_NOME_EXT_' + i] = productNameForLabelSplit[i]
         }
+      }
+
+      if(labelHasDate == 'true') {
+          var dateFormatSplit = dateFormat.split('/');
+          var dateFinalString = "";
+
+          for(let i = 0; i < dateFormatSplit.length; i++) {
+            var intermediateDate = moment().format("" + dateFormatSplit[i]);
+            if (i == dateFormatSplit.length - 1) {
+              dateFinalString = dateFinalString + intermediateDate;
+            } else {
+              dateFinalString = dateFinalString + intermediateDate + "/";
+            }
+          }
+          
+          map["_DATE"] = dateFinalString;
+
       }
 
       if (labelsWith2Columns === 'false') {
@@ -678,6 +698,8 @@ export default {
       let numberLabelsOnArticle = labelToPrintDetails[0].NUMBER_LABELS_ON_ARTICLE
       let numberLabelsOnBox = labelToPrintDetails[0].NUMBER_LABELS_ON_BOX
       let labelWithCounterPrintDelay = labelToPrintDetails[0].LABEL_WITH_COUNTER_PRINT_DELAY
+      let labelHasDate = labelToPrintDetails[0].LABEL_HAS_DATE;
+      let dateFormat = labelToPrintDetails[0].DATE_FORMAT;
       let FullEan = ''
       let checkDigit = ''
       let EanWithCheckDigit = ''
@@ -852,6 +874,23 @@ export default {
             map['_ARTIGO_NOME_EXT_' + i] = productNameForLabelSplit[i]
             mapTestLabel['_ARTIGO_NOME_EXT_' + i] = productNameForLabelSplit[i]
           }
+        }
+
+        if(labelHasDate == 'true') {
+          var dateFormatSplit = dateFormat.split('/');
+          var dateFinalString = "";
+
+          for(let i = 0; i < dateFormatSplit.length; i++) {
+            var intermediateDate = moment().format("" + dateFormatSplit[i]);
+            if (i == dateFormatSplit.length - 1) {
+              dateFinalString = dateFinalString + intermediateDate;
+            } else {
+              dateFinalString = dateFinalString + intermediateDate + "/";
+            }
+          }
+          
+          map["_DATE"] = dateFinalString;
+
         }
 
         sendToPrinterTestLabel = this.replaceAll(zplStringTestLabel, mapTestLabel)

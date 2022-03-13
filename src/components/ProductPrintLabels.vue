@@ -148,6 +148,8 @@ import Loading from 'vue-loading-overlay'
 // Import stylesheet
 import 'vue-loading-overlay/dist/vue-loading.css'
 
+import moment from 'moment'
+
 import Spinner from 'vue-simple-spinner'
 
 let sitebase
@@ -368,6 +370,8 @@ export default {
       let printerPort = this.productLabel[0].ARTICLE_PRINTER_PORT
       let labelHasCounter = this.productLabel[0].LABEL_HAS_COUNTER
       let numberLabelsOnArticle = this.productLabel[0].NUMBER_LABELS_ON_ARTICLE
+      let labelHasDate = this.productLabel[0].LABEL_HAS_DATE;
+      let dateFormat = this.productLabel[0].DATE_FORMAT;
       let labelsWith2Columns = qtyLabelsByLine
       let checkDigit = 0
       let eanWithCheckDigit = 0
@@ -418,6 +422,23 @@ export default {
           map['_ARTIGO_NOME_EXT_' + i] = productNameForLabelSplit[i]
           mapTestLabel['_ARTIGO_NOME_EXT_' + i] = productNameForLabelSplit[i]
         }
+      }
+
+      if(labelHasDate == 'true') {
+          var dateFormatSplit = dateFormat.split('/');
+          var dateFinalString = "";
+
+          for(let i = 0; i < dateFormatSplit.length; i++) {
+            var intermediateDate = moment().format("" + dateFormatSplit[i]);
+            if (i == dateFormatSplit.length - 1) {
+              dateFinalString = dateFinalString + intermediateDate;
+            } else {
+              dateFinalString = dateFinalString + intermediateDate + "/";
+            }
+          }
+          
+          map["_DATE"] = dateFinalString;
+
       }
 
       if (labelsWith2Columns == false) {
@@ -474,6 +495,8 @@ export default {
       let labelHasCounter = this.productLabel[0].LABEL_HAS_COUNTER
       let numberLabelsOnBox = this.productLabel[0].NUMBER_LABELS_ON_BOX
       let boxLabelPrintDelay = this.productLabel[0].LABEL_WITH_COUNTER_PRINT_DELAY
+      let labelHasDate = this.productLabel[0].LABEL_HAS_DATE;
+      let dateFormat = this.productLabel[0].DATE_FORMAT;
       let FullEan = ''
       let checkDigit = ''
       let EanWithCheckDigit = ''
@@ -638,6 +661,23 @@ export default {
             map['_ARTIGO_NOME_EXT_' + i] = productNameForLabelSplit[i]
             mapTestLabel['_ARTIGO_NOME_EXT_' + i] = productNameForLabelSplit[i]
           }
+        }
+
+        if(labelHasDate == 'true') {
+          var dateFormatSplit = dateFormat.split('/');
+          var dateFinalString = "";
+
+          for(let i = 0; i < dateFormatSplit.length; i++) {
+            var intermediateDate = moment().format("" + dateFormatSplit[i]);
+            if (i == dateFormatSplit.length - 1) {
+              dateFinalString = dateFinalString + intermediateDate;
+            } else {
+              dateFinalString = dateFinalString + intermediateDate + "/";
+            }
+          }
+          
+          map["_DATE"] = dateFinalString;
+
         }
 
         //let digitsForPadding = totalLabelsToPrint.toString().length
