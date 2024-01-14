@@ -17,6 +17,11 @@
       <div class="outer-wrap">
         <div class="row">
           <div class="col-md-12">
+            <button type="button" class="btn btn-lg btn-warning float-right" @click="listProducts()">Pesquisar Produtos</button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
               <ul id="table-header">
                 <div class="row">
                   <li class="table-header-item col-md-1">
@@ -126,21 +131,25 @@
 
 <script>
 import axios from 'axios'
-// import { request } from 'http'
-// Import component
 import Loading from 'vue-loading-overlay'
-// Import stylesheet
 import 'vue-loading-overlay/dist/vue-loading.css'
+import moment from 'moment'
 
 import Spinner from 'vue-simple-spinner'
 
 let sitebase
+let imageBase
 
 if (process.env.NODE_ENV === 'development') {
-  // sitebase = 'http://localhost:8080/'
-  sitebase = 'http://192.168.1.10:8080/'
+  //sitebase = 'http://' + process.env.IP_ADDRESS + ':8080/',
+  //imageBase = 'http://' + process.env.IP_ADDRESS + ':8080'
+  sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
+  imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/'
 } else {
-  sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/'
+  sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
+  imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com'
+  //sitebase = 'http://192.168.1.17:8080/',
+  //imageBase = 'http://192.168.1.17:8080'
 }
 
 const getLabels = 'getLabelsToPrint'
@@ -151,7 +160,7 @@ export default {
     return {
       icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAIISURBVHgB7VfLccJADJUJd0gHBhogHUAJqQB3EK45YSogVBDoIB3gDuIGIL7mhCvAeQ9kxqzXH8iMM5Phzeyw2ZX0JK0kgjMYDCZJkryJSFeaQeQ4ju/0+/0v/OFKs4jbKelut3OkASDQBB/dlvwR7sSNoX2NsOu6bLkht61Wy9Xj+HA4hFEUBXIFahGDkEQv2Hpi6XfcsVpjbD/gxBxORFU2K1MNgwsYZq9PpXzI8M6jLHRmcisxo+z1ep9KeAamXICoxliP7H3ucbY21H3q0kaRfUcb+mKA8C3hOUlNxTnkfJsh2OH5zHAyxBoj83FG7shnjRikCwvpKiVlKrH2uhbquM9sZBUwk4dqK89hHiBaT05FdAGkdK2kNOTL6U25photI5znKcSDzVElsVZvDpl28SzXqU5o00Xks0pieB3blLWHS5F9SwP5FrQQz+26x8FBLC13a3VuZFNEFpeVxEyppT3O6dICo6FYFyt9qgQTyWO13W5XOXtF7QSiDavSkPchZ82IDg3fOI5QlE+124mCiPqZfWgSQ/E9TSkd5B7DYmOSUpfDpejdrREbkfhiDIYaWKbpt9grjjgLvik87+m7xyWivFtStog0i1rfTvpt43HP1KKI+PbHFgER77jCkna6jdhwIsBHIL/E/X+u/0/MPt5Lc7+bUkQPnU7nW0djU+Qx+F5/ADN8+ahyQQG5AAAAAElFTkSuQmCC',
       labelsToPrint: '',
-      image_base: 'http://192.168.1.10:8080',
+      image_base: imageBase,
       isLoading: false,
       fullPage: true,
       color_loading: '#006400',
@@ -184,6 +193,7 @@ export default {
     'vue-simple-spinner': Spinner
   },
   mounted () {
+    console.log(process.env.IP_ADDRESS);
     axios({ method: 'GET', 'url': sitebase + getLabels }).then(result => {
       this.labelsToPrint = result.data
     }, error => {
@@ -202,8 +212,11 @@ export default {
     }
   },
   methods: {
+    listProducts(){
+     this.$router.push('/listProducts'); 
+    },
     launchOverlay () {
-      this.isLoading = true
+      // this.isLoading = true
     },
     async launchSpinner (secondsToWait) {
       this.loadSimpleSpinner = true
@@ -247,16 +260,16 @@ export default {
     timer (ms) {
       return new Promise(resolve => setTimeout(resolve, ms))
     },
-    async executeCycleToPrintLabels (zplString, totalLabelsToPrint, digitsForPadding, printerIPAddress, printerPort) { // We need to wrap the loop into an async function for this to work
+    async executeCycleToPrintLabels (zplString, totalLabelsToPrint, digitsForPadding, printerIPAddress, printerPort, labelWithCounterPrintDelay) { // We need to wrap the loop into an async function for this to work
       let zplStringAux = zplString
 
       console.log('Inside executeCycleToPrintLabels')
       console.log('totalLabelsToPrint: ' + totalLabelsToPrint)
 
       // this.isLoading = true
-      this.loadSimpleSpinner = true
+      // this.loadSimpleSpinner = true
       let timeToWait = totalLabelsToPrint * 2
-      this.loadSimpleSpinnerMessage = 'Faltam ' + timeToWait + ' segundos para terminar a impressão'
+      // this.loadSimpleSpinnerMessage = 'Faltam ' + timeToWait + ' segundos para terminar a impressão'
 
       for (let i = 1; i <= totalLabelsToPrint; i++) {
         let counterValueTestLabel = this.padDigits(i, digitsForPadding) + ''
@@ -266,22 +279,25 @@ export default {
         }
 
         let sendToPrinterAllLabels = this.replaceAll(zplStringAux, map)
-        this.sendZplToPrinter(printerIPAddress, printerPort, zplString)
+        this.sendZplToPrinter(printerIPAddress, printerPort, sendToPrinterAllLabels)
         zplStringAux = zplString
         console.log('ZPL_FINAL:' + sendToPrinterAllLabels)
         console.log('*******************************************************************************************')
 
-        await this.timer(2000) // then the created Promise can be awaited
+        await this.timer(labelWithCounterPrintDelay) // then the created Promise can be awaited // COMMENTED FOR REMOVING SPPINNER
 
         timeToWait = timeToWait - 2
-        this.loadSimpleSpinnerMessage = 'Faltam ' + timeToWait + ' segundos para terminar a impressão'
+        // this.loadSimpleSpinnerMessage = 'Faltam ' + timeToWait + ' segundos para terminar a impressão'
+
 
         if (i === totalLabelsToPrint) {
           // this.isLoading = false
-          this.loadSimpleSpinner = false
-          this.$refs['modal-paint-2'].show()
+          // this.loadSimpleSpinner = false
+          // this.$refs['modal-paint-2'].show()
         }
       }
+
+      this.$refs['modal-paint-2'].show() // ADDED FOR REMOVING SPPINNER
     },
     async launchSecondModal () {
       this.$refs['modal-paint'].hide()
@@ -303,6 +319,7 @@ export default {
       let labelHasCounter = this.first_modal_action_object.labelHasCounter
       let totalLabelsToPrint = this.first_modal_action_object.totalLabelsToPrint
       let quantityArticleLabels = this.first_modal_action_object.quantityArticleLabels
+      let labelWithCounterPrintDelay = this.first_modal_action_object.labelWithCounterPrintDelay
 
       if (this.actiontype === 'article') {
         this.modal = {
@@ -317,7 +334,7 @@ export default {
           ok_button: 'Sim'
         }
       }
-      // this.$refs['modal-paint-2'].show()
+      this.$refs['modal-paint-2'].show()
 
       // START OF THE PRINT
 
@@ -331,7 +348,7 @@ export default {
         let timeToWait = totalLabelsToPrint * 0.6 * 1
         console.log('Labels To Print: ' + totalLabelsToPrint)
         console.log('timeToWait: ' + timeToWait)
-        await this.launchSpinner(timeToWait.toFixed())
+        // await this.launchSpinner(timeToWait.toFixed())
         // await this.timer(timeToWait)
         // this.isLoading = false
 
@@ -383,9 +400,20 @@ export default {
         let digitsForPadding = totalLabelsToPrint.toString().length
 
         console.log('THE LABEL HAS A COUNTER')
-        // Returns a Promise that resolves after "ms" Milliseconds
+        
+        let counterValueTestLabel = this.padDigits(1, digitsForPadding) + ''
 
-        await this.executeCycleToPrintLabels(zplString, totalLabelsToPrint, digitsForPadding, printerIPAddress, printerPort)
+        let map = {
+          '_COUNTER_VALUE': counterValueTestLabel
+        }
+
+        let sendToPrinterAllLabels = this.replaceAll(zplString, map)
+
+        this.sendZplToPrinter(printerIPAddress, printerPort, sendToPrinterAllLabels)
+
+        console.log('ZPL_FINAL:' + sendToPrinterAllLabels)
+        // Returns a Promise that resolves after "ms" Milliseconds
+        //await this.executeCycleToPrintLabels(zplString, totalLabelsToPrint, digitsForPadding, printerIPAddress, printerPort, labelWithCounterPrintDelay)
 
         // IF THE ARTICLE LABELS WHERE ALREADY PRINTED, THEN THIS RECORD SHOULD BE DELETED
         if (labelBeingPrinted === 'box') {
@@ -527,6 +555,8 @@ export default {
       let labelHasCounter = labelToPrintDetails[0].LABEL_HAS_COUNTER
       let numberLabelsOnArticle = labelToPrintDetails[0].NUMBER_LABELS_ON_ARTICLE
       let labelsWith2Columns = labelToPrintDetails[0].ARTICLE_LABEL_WITH_2_COLUMNS
+      let labelHasDate = labelToPrintDetails[0].LABEL_HAS_DATE;
+      let dateFormat = labelToPrintDetails[0].DATE_FORMAT;
       let checkDigit = 0
       let eanWithCheckDigit = 0
       let quantityToReplace = 0
@@ -576,6 +606,23 @@ export default {
           map['_ARTIGO_NOME_EXT_' + i] = productNameForLabelSplit[i]
           mapTestLabel['_ARTIGO_NOME_EXT_' + i] = productNameForLabelSplit[i]
         }
+      }
+
+      if(labelHasDate == 'true') {
+          var dateFormatSplit = dateFormat.split('/');
+          var dateFinalString = "";
+
+          for(let i = 0; i < dateFormatSplit.length; i++) {
+            var intermediateDate = moment().format("" + dateFormatSplit[i]);
+            if (i == dateFormatSplit.length - 1) {
+              dateFinalString = dateFinalString + intermediateDate;
+            } else {
+              dateFinalString = dateFinalString + intermediateDate + "/";
+            }
+          }
+          
+          map["_DATE"] = dateFinalString;
+
       }
 
       if (labelsWith2Columns === 'false') {
@@ -650,6 +697,9 @@ export default {
       let labelHasCounter = labelToPrintDetails[0].LABEL_HAS_COUNTER
       let numberLabelsOnArticle = labelToPrintDetails[0].NUMBER_LABELS_ON_ARTICLE
       let numberLabelsOnBox = labelToPrintDetails[0].NUMBER_LABELS_ON_BOX
+      let labelWithCounterPrintDelay = labelToPrintDetails[0].LABEL_WITH_COUNTER_PRINT_DELAY
+      let labelHasDate = labelToPrintDetails[0].LABEL_HAS_DATE;
+      let dateFormat = labelToPrintDetails[0].DATE_FORMAT;
       let FullEan = ''
       let checkDigit = ''
       let EanWithCheckDigit = ''
@@ -769,7 +819,8 @@ export default {
           'labelHasCounter': labelHasCounter,
           'totalLabelsToPrint': quantityBoxLabels,
           'quantityArticleLabels': quantityBoxLabels,
-          'quantity_box_labels': quantityBoxLabels
+          'quantity_box_labels': quantityBoxLabels,
+          'labelWithCounterPrintDelay' : labelWithCounterPrintDelay
         }
 
         this.launchModal('box')
@@ -783,17 +834,19 @@ export default {
           EanWithCheckDigit = barCodeNumber
         }
 
+        let labelsToPrint = quantityBoxLabels * numberLabelsOnBox;
+
         let map = {
           '_EAN_CHECK_DIGIT': EanWithCheckDigit,
           '_QUANTIDADE_EXTENDIDA': quantityFull,
           '_NUM_ARTIGO': customerProductId,
           '_ORDER_ID': orderId,
           '_QUANTIDADE': qtyByBox,
-          '_PRINT_QUANTITY': numberLabelsOnBox, // THIS IS THE NUMBER OF LABELS IN EACH BOX (2, 3, etc ...)
+          '_PRINT_QUANTITY': labelsToPrint, // Total of labels to print that will go in the ^PQ of the ZPL sent to the printer
           '_COUNTER_MAX_VALUE': quantityBoxLabels
         }
 
-        let counterValueTestLabel = this.padDigits(1, quantityBoxLabels.toString().length) + ''
+        let counterValueTestLabel = this.padDigits(1, labelsToPrint.toString().length) + ''
 
         let mapTestLabel = {
           '_EAN_CHECK_DIGIT': EanWithCheckDigit,
@@ -823,6 +876,23 @@ export default {
           }
         }
 
+        if(labelHasDate == 'true') {
+          var dateFormatSplit = dateFormat.split('/');
+          var dateFinalString = "";
+
+          for(let i = 0; i < dateFormatSplit.length; i++) {
+            var intermediateDate = moment().format("" + dateFormatSplit[i]);
+            if (i == dateFormatSplit.length - 1) {
+              dateFinalString = dateFinalString + intermediateDate;
+            } else {
+              dateFinalString = dateFinalString + intermediateDate + "/";
+            }
+          }
+          
+          map["_DATE"] = dateFinalString;
+
+        }
+
         sendToPrinterTestLabel = this.replaceAll(zplStringTestLabel, mapTestLabel)
 
         sendToPrinterAllLabels = this.replaceAll(zplStringAllLabels, map)
@@ -842,7 +912,8 @@ export default {
           'labelHasCounter': labelHasCounter,
           'totalLabelsToPrint': quantityBoxLabels,
           'quantityArticleLabels': quantityBoxLabels,
-          'quantity_box_labels': quantityBoxLabels
+          'quantity_box_labels': quantityBoxLabels,
+          'labelWithCounterPrintDelay' : labelWithCounterPrintDelay
         }
 
         this.launchModal('box')
