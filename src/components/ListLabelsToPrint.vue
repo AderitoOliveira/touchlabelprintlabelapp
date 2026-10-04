@@ -141,18 +141,18 @@ let sitebase
 let imageBase
 
 if (process.env.NODE_ENV === 'development') {
-  //sitebase = 'http://' + process.env.IP_ADDRESS + ':8080/',
-  //imageBase = 'http://' + process.env.IP_ADDRESS + ':8080'
-  //sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
-  //imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/'
-  sitebase = 'http://52.31.54.200:8080/',
+  // sitebase = 'http://' + process.env.IP_ADDRESS + ':8080/',
+  // imageBase = 'http://' + process.env.IP_ADDRESS + ':8080'
+  // sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
+  // imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/'
+  sitebase = 'http://52.31.54.200:8080/'
   imageBase = 'http://52.31.54.200:8080/'
 } else {
-  //sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
-  //imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com'
-  //sitebase = 'http://192.168.1.17:8080/',
-  //imageBase = 'http://192.168.1.17:8080'
-  sitebase = 'http://52.31.54.200:8080/',
+  // sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
+  // imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com'
+  // sitebase = 'http://192.168.1.17:8080/',
+  // imageBase = 'http://192.168.1.17:8080'
+  sitebase = 'http://52.31.54.200:8080/'
   imageBase = 'http://52.31.54.200:8080/'
 }
 
@@ -197,7 +197,7 @@ export default {
     'vue-simple-spinner': Spinner
   },
   mounted () {
-    console.log(process.env.IP_ADDRESS);
+    console.log(process.env.IP_ADDRESS)
     axios({ method: 'GET', 'url': sitebase + getLabels }).then(result => {
       this.labelsToPrint = result.data
     }, error => {
@@ -216,8 +216,8 @@ export default {
     }
   },
   methods: {
-    listProducts(){
-     this.$router.push('/listProducts'); 
+    listProducts () {
+      this.$router.push('/listProducts')
     },
     launchOverlay () {
       // this.isLoading = true
@@ -293,7 +293,6 @@ export default {
         timeToWait = timeToWait - 2
         // this.loadSimpleSpinnerMessage = 'Faltam ' + timeToWait + ' segundos para terminar a impressão'
 
-
         if (i === totalLabelsToPrint) {
           // this.isLoading = false
           // this.loadSimpleSpinner = false
@@ -322,8 +321,6 @@ export default {
       let boxLabelAlreadyPrinted = this.first_modal_action_object.boxLabelAlreadyPrinted
       let labelHasCounter = this.first_modal_action_object.labelHasCounter
       let totalLabelsToPrint = this.first_modal_action_object.totalLabelsToPrint
-      let quantityArticleLabels = this.first_modal_action_object.quantityArticleLabels
-      let labelWithCounterPrintDelay = this.first_modal_action_object.labelWithCounterPrintDelay
 
       if (this.actiontype === 'article') {
         this.modal = {
@@ -404,7 +401,7 @@ export default {
         let digitsForPadding = totalLabelsToPrint.toString().length
 
         console.log('THE LABEL HAS A COUNTER')
-        
+
         let counterValueTestLabel = this.padDigits(1, digitsForPadding) + ''
 
         let map = {
@@ -417,7 +414,7 @@ export default {
 
         console.log('ZPL_FINAL:' + sendToPrinterAllLabels)
         // Returns a Promise that resolves after "ms" Milliseconds
-        //await this.executeCycleToPrintLabels(zplString, totalLabelsToPrint, digitsForPadding, printerIPAddress, printerPort, labelWithCounterPrintDelay)
+        // await this.executeCycleToPrintLabels(zplString, totalLabelsToPrint, digitsForPadding, printerIPAddress, printerPort, labelWithCounterPrintDelay)
 
         // IF THE ARTICLE LABELS WHERE ALREADY PRINTED, THEN THIS RECORD SHOULD BE DELETED
         if (labelBeingPrinted === 'box') {
@@ -512,7 +509,7 @@ export default {
       request.onload = function () {
         let status = request.status
         let data = request.responseText
-        output.innerHTML = 'Status: ' + status + '<br>' + data
+        console.log('Printer response - Status: ' + status + ' ' + data)
       }
 
       request.open(method, url, async)
@@ -559,8 +556,8 @@ export default {
       let labelHasCounter = labelToPrintDetails[0].LABEL_HAS_COUNTER
       let numberLabelsOnArticle = labelToPrintDetails[0].NUMBER_LABELS_ON_ARTICLE
       let labelsWith2Columns = labelToPrintDetails[0].ARTICLE_LABEL_WITH_2_COLUMNS
-      let labelHasDate = labelToPrintDetails[0].LABEL_HAS_DATE;
-      let dateFormat = labelToPrintDetails[0].DATE_FORMAT;
+      let labelHasDate = labelToPrintDetails[0].LABEL_HAS_DATE
+      let dateFormat = labelToPrintDetails[0].DATE_FORMAT
       let checkDigit = 0
       let eanWithCheckDigit = 0
       let quantityToReplace = 0
@@ -612,21 +609,20 @@ export default {
         }
       }
 
-      if(labelHasDate == 'true') {
-          var dateFormatSplit = dateFormat.split('/');
-          var dateFinalString = "";
+      if (labelHasDate === 'true') {
+        var dateFormatSplit = dateFormat.split('/')
+        var dateFinalString = ''
 
-          for(let i = 0; i < dateFormatSplit.length; i++) {
-            var intermediateDate = moment().format("" + dateFormatSplit[i]);
-            if (i == dateFormatSplit.length - 1) {
-              dateFinalString = dateFinalString + intermediateDate;
-            } else {
-              dateFinalString = dateFinalString + intermediateDate + "/";
-            }
+        for (let i = 0; i < dateFormatSplit.length; i++) {
+          var intermediateDate = moment().format('' + dateFormatSplit[i])
+          if (i === dateFormatSplit.length - 1) {
+            dateFinalString = dateFinalString + intermediateDate
+          } else {
+            dateFinalString = dateFinalString + intermediateDate + '/'
           }
-          
-          map["_DATE"] = dateFinalString;
+        }
 
+        map['_DATE'] = dateFinalString
       }
 
       if (labelsWith2Columns === 'false') {
@@ -685,7 +681,6 @@ export default {
       }
 
       this.launchModal('article')
-
     },
     async printBoxLabels (uniqueId, customerProductId, orderId, quantityBoxLabels, articleLabelAlreadyPrinted) {
       let labelToPrintDetails = await this.getLabelToPrintDetails(customerProductId)
@@ -699,11 +694,10 @@ export default {
       let printerIPAddress = labelToPrintDetails[0].BOX_PRINTER_IP_ADDRESS
       let printerPort = labelToPrintDetails[0].BOX_PRINTER_PORT
       let labelHasCounter = labelToPrintDetails[0].LABEL_HAS_COUNTER
-      let numberLabelsOnArticle = labelToPrintDetails[0].NUMBER_LABELS_ON_ARTICLE
       let numberLabelsOnBox = labelToPrintDetails[0].NUMBER_LABELS_ON_BOX
       let labelWithCounterPrintDelay = labelToPrintDetails[0].LABEL_WITH_COUNTER_PRINT_DELAY
-      let labelHasDate = labelToPrintDetails[0].LABEL_HAS_DATE;
-      let dateFormat = labelToPrintDetails[0].DATE_FORMAT;
+      let labelHasDate = labelToPrintDetails[0].LABEL_HAS_DATE
+      let dateFormat = labelToPrintDetails[0].DATE_FORMAT
       let FullEan = ''
       let checkDigit = ''
       let EanWithCheckDigit = ''
@@ -824,7 +818,7 @@ export default {
           'totalLabelsToPrint': quantityBoxLabels,
           'quantityArticleLabels': quantityBoxLabels,
           'quantity_box_labels': quantityBoxLabels,
-          'labelWithCounterPrintDelay' : labelWithCounterPrintDelay
+          'labelWithCounterPrintDelay': labelWithCounterPrintDelay
         }
 
         this.launchModal('box')
@@ -838,7 +832,7 @@ export default {
           EanWithCheckDigit = barCodeNumber
         }
 
-        let labelsToPrint = quantityBoxLabels * numberLabelsOnBox;
+        let labelsToPrint = quantityBoxLabels * numberLabelsOnBox
 
         let map = {
           '_EAN_CHECK_DIGIT': EanWithCheckDigit,
@@ -880,21 +874,19 @@ export default {
           }
         }
 
-        if(labelHasDate == 'true') {
-          var dateFormatSplit = dateFormat.split('/');
-          var dateFinalString = "";
+        if (labelHasDate === 'true') {
+          var dateFormatSplit = dateFormat.split('/')
+          var dateFinalString = ''
 
-          for(let i = 0; i < dateFormatSplit.length; i++) {
-            var intermediateDate = moment().format("" + dateFormatSplit[i]);
-            if (i == dateFormatSplit.length - 1) {
-              dateFinalString = dateFinalString + intermediateDate;
+          for (let i = 0; i < dateFormatSplit.length; i++) {
+            var intermediateDate = moment().format('' + dateFormatSplit[i])
+            if (i === dateFormatSplit.length - 1) {
+              dateFinalString = dateFinalString + intermediateDate
             } else {
-              dateFinalString = dateFinalString + intermediateDate + "/";
+              dateFinalString = dateFinalString + intermediateDate + '/'
             }
           }
-          
-          map["_DATE"] = dateFinalString;
-
+          map['_DATE'] = dateFinalString
         }
 
         sendToPrinterTestLabel = this.replaceAll(zplStringTestLabel, mapTestLabel)
@@ -917,7 +909,7 @@ export default {
           'totalLabelsToPrint': quantityBoxLabels,
           'quantityArticleLabels': quantityBoxLabels,
           'quantity_box_labels': quantityBoxLabels,
-          'labelWithCounterPrintDelay' : labelWithCounterPrintDelay
+          'labelWithCounterPrintDelay': labelWithCounterPrintDelay
         }
 
         this.launchModal('box')

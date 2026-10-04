@@ -80,7 +80,7 @@
                         <div class="label-quantity" v-if="labelHasCounterButNoCurrentOrders == false">
                             <label class="control-label" for="orderId">Num. Encomenda</label>
                             <b-form-select v-model="b_form_selected" :options="ordersForProductsWithCounter"></b-form-select>
-                            
+
                         </div>
                         <div class="label-quantity" v-if="labelHasCounterButNoCurrentOrders == true">
                             <label class="control-label" for="orderId">Num. Encomenda</label>
@@ -121,7 +121,6 @@
                 </div>
             </div>
 
-
                 </div>
             </div>
       </div>
@@ -143,37 +142,32 @@
 
 <script>
 import axios from 'axios'
-import _ from 'lodash';
-import Loading from 'vue-loading-overlay'
 // Import stylesheet
 import 'vue-loading-overlay/dist/vue-loading.css'
 
 import moment from 'moment'
 
-import Spinner from 'vue-simple-spinner'
-
 let sitebase
 let imageBase
 
 if (process.env.NODE_ENV === 'development') {
-  //sitebase = 'http://' + process.env.IP_ADDRESS + ':8080/',
-  //imageBase = 'http://' + process.env.IP_ADDRESS + ':8080/images/'
-  //sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
-  //imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/images/'
-  sitebase = 'http://52.31.54.200:8080/',
+  // sitebase = 'http://' + process.env.IP_ADDRESS + ':8080/',
+  // imageBase = 'http://' + process.env.IP_ADDRESS + ':8080/images/'
+  // sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
+  // imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/images/'
+  sitebase = 'http://52.31.54.200:8080/'
   imageBase = 'http://52.31.54.200:8080/'
 } else {
-  //sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
-  //imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/images/'
-  //sitebase = 'http://192.168.1.8:8080/',
-  //imageBase = 'http://192.168.1.8:8080/images/'
-  sitebase = 'http://52.31.54.200:8080/',
+  // sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
+  // imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/images/'
+  // sitebase = 'http://192.168.1.8:8080/',
+  // imageBase = 'http://192.168.1.8:8080/images/'
+  sitebase = 'http://52.31.54.200:8080/'
   imageBase = 'http://52.31.54.200:8080/'
 }
 
 const getProductLabelDetail = 'labelToPrintForProduct/'
-const getDropdownOrderId    = 'orderidfordropdowninlabel/'
-const searchProduct = 'getProduct/'
+const getDropdownOrderId = 'orderidfordropdowninlabel/'
 
 export default {
   name: 'ListProducts',
@@ -191,7 +185,7 @@ export default {
       qtyArticle: '',
       qtyBox: '',
       boxCounterInitial: '',
-      boxCounterFinal:'',
+      boxCounterFinal: '',
       b_form_selected: '',
       orderId: '',
       orderNumber: '',
@@ -200,65 +194,60 @@ export default {
       centermodal: ['centermodal'],
       modal: {
         title: 'Default Modal Title',
-        content: 'this is the modal content',
+        content: 'this is the modal content'
       }
     }
   },
   created () {
-      this.customerProductId = this.$route.params.customerProductId;
+    this.customerProductId = this.$route.params.customerProductId
   },
   mounted () {
     axios({ method: 'GET', 'url': sitebase + getProductLabelDetail + encodeURIComponent(this.customerProductId) }).then(result => {
-      this.productLabel = result.data;
-      console.log(sitebase + getProductLabelDetail + encodeURIComponent(this.customerProductId));
-      console.log(JSON.stringify(this.productLabel));
-      //console.log("this.productLabel[0].LABEL_HAS_COUNTER: " + this.productLabel[0].LABEL_HAS_COUNTER)
-      if ( this.productLabel.length > 0) 
-      {
-        if ( this.productLabel[0].LABEL_HAS_COUNTER == 'true') 
-        {
-            this.showLabelBoxCounter='true'
+      this.productLabel = result.data
+      console.log(sitebase + getProductLabelDetail + encodeURIComponent(this.customerProductId))
+      console.log(JSON.stringify(this.productLabel))
+      // console.log("this.productLabel[0].LABEL_HAS_COUNTER: " + this.productLabel[0].LABEL_HAS_COUNTER)
+      if (this.productLabel.length > 0) {
+        if (this.productLabel[0].LABEL_HAS_COUNTER === 'true') {
+          this.showLabelBoxCounter = 'true'
         } else {
-            this.showLabelBoxCounter='false'
+          this.showLabelBoxCounter = 'false'
         }
       } else {
-          this.showPage='false'
-          this.launchModal()
+        this.showPage = 'false'
+        this.launchModal()
       }
-      //console.log(this.productLabel[0].LABEL_HAS_COUNTER)
-    }, error => {
-      console.error(error)
-    });
-
-    axios({ method: 'GET', 'url': sitebase + getDropdownOrderId + encodeURIComponent(this.customerProductId) }).then(result => {
-      this.ordersForProductsWithCounter = result.data;
-      console.log("this.ordersForProductsWithCounter: " + JSON.stringify(this.ordersForProductsWithCounter))
-      if ( this.ordersForProductsWithCounter.length == 0) 
-      {
-          this.labelHasCounterButNoCurrentOrders = true
-      }
-      //console.log(this.productLabel[0].LABEL_HAS_COUNTER)
+      // console.log(this.productLabel[0].LABEL_HAS_COUNTER)
     }, error => {
       console.error(error)
     })
 
-
+    axios({ method: 'GET', 'url': sitebase + getDropdownOrderId + encodeURIComponent(this.customerProductId) }).then(result => {
+      this.ordersForProductsWithCounter = result.data
+      console.log('this.ordersForProductsWithCounter: ' + JSON.stringify(this.ordersForProductsWithCounter))
+      if (this.ordersForProductsWithCounter.length === 0) {
+        this.labelHasCounterButNoCurrentOrders = true
+      }
+      // console.log(this.productLabel[0].LABEL_HAS_COUNTER)
+    }, error => {
+      console.error(error)
+    })
   },
   computed: {
-    
+
   },
   methods: {
-   launchModal () {
-    this.modal_action = false
-    this.modal = {
+    launchModal () {
+      this.modal_action = false
+      this.modal = {
         title: 'Configuração em Falta',
         content: 'Este producto não tem a associação entre o produto e o cliente ou não existe etiqueta criada para o cliente!',
         ok_button: 'Fechar'
-    }
-    this.$refs['modal-paint'].show()
+      }
+      this.$refs['modal-paint'].show()
     },
     goToListProducts () {
-        this.$router.push('/listProducts')
+      this.$router.push('/listProducts')
     },
     padDigits (number, digits) {
       return Array(Math.max(digits - String(number).length + 1, 0)).join(0) + number
@@ -275,16 +264,16 @@ export default {
       return str
     },
     reverseString (data) {
-      var rev = [];
+      var rev = []
       let revStr = ''
       for (let i = data.length - 1, j = 0; i >= 0; i--, j++) {
-          rev[j] = data[i];
+        rev[j] = data[i]
       }
-      revStr = rev.join('');
-      return revStr;
+      revStr = rev.join('')
+      return revStr
     },
     eanCheckDigit (barCode) {
-      alert("barCode inside eanCheckDigit: " + barCode) 
+      alert('barCode inside eanCheckDigit: ' + barCode)
       let result = 0
       let rs = this.reverseString(barCode)
       for (let counter = 0; counter < rs.length; counter++) {
@@ -303,7 +292,7 @@ export default {
       request.onload = function () {
         let status = request.status
         let data = request.responseText
-        output.innerHTML = 'Status: ' + status + '<br>' + data
+        console.log('Printer response - Status: ' + status + ' ' + data)
       }
 
       request.open(method, url, async)
@@ -323,7 +312,7 @@ export default {
       let totalLabelsToPrint = counterFinalNumber - counterInitialNumber
 
       console.log('Inside executeCycleToPrintLabels')
-      console.log('totalLabelsToPrint: ' + totalLabelsToPrint   )
+      console.log('totalLabelsToPrint: ' + totalLabelsToPrint)
 
       // this.isLoading = true
       // this.loadSimpleSpinner = true
@@ -341,14 +330,13 @@ export default {
         let sendToPrinterAllLabels = this.replaceAll(zplStringAux, map)
         this.sendZplToPrinter(printerIPAddress, printerPort, sendToPrinterAllLabels)
         zplStringAux = zplString
-        //console.log('ZPL_FINAL:' + sendToPrinterAllLabels)
+        // console.log('ZPL_FINAL:' + sendToPrinterAllLabels)
         console.log('*******************************************************************************************')
 
         await this.timer(executeCycleToPrintLabels) // then the created Promise can be awaited // COMMENTED FOR REMOVING SPPINNER
 
         timeToWait = timeToWait - 2
         // this.loadSimpleSpinnerMessage = 'Faltam ' + timeToWait + ' segundos para terminar a impressão'
-
 
         if (i === totalLabelsToPrint) {
           // this.isLoading = false
@@ -360,7 +348,6 @@ export default {
       // this.$refs['modal-paint-2'].show() // ADDED FOR REMOVING SPPINNER
     },
     async printLabelArticle (numberOfLabelsToPrint, qtyLabelsByLine) {
-
       let customerProductId = this.productLabel[0].CUSTOMER_PRODUCT_ID
       let barCodeNumber = this.productLabel[0].Bar_Code_Tech_Sheet
       let productNameForLabel = this.productLabel[0].PRODUCT_NAME_FOR_LABEL
@@ -374,14 +361,14 @@ export default {
       let printerPort = this.productLabel[0].ARTICLE_PRINTER_PORT
       let labelHasCounter = this.productLabel[0].LABEL_HAS_COUNTER
       let numberLabelsOnArticle = this.productLabel[0].NUMBER_LABELS_ON_ARTICLE
-      let labelHasDate = this.productLabel[0].LABEL_HAS_DATE;
-      let dateFormat = this.productLabel[0].DATE_FORMAT;
+      let labelHasDate = this.productLabel[0].LABEL_HAS_DATE
+      let dateFormat = this.productLabel[0].DATE_FORMAT
       let labelsWith2Columns = qtyLabelsByLine
       let checkDigit = 0
       let eanWithCheckDigit = 0
       let quantityToReplace = 0
       let sendToPrinter = ''
-      let sendToPrinterTest = ''
+      let sendToPrinterTest = '' // eslint-disable-line no-unused-vars
 
       // We need to remove the first digit to calculate the checksum for the EAN-13
       if (barCodeNumber.charAt(0) === '0') {
@@ -428,24 +415,23 @@ export default {
         }
       }
 
-      if(labelHasDate == 'true') {
-          var dateFormatSplit = dateFormat.split('/');
-          var dateFinalString = "";
+      if (labelHasDate === 'true') {
+        var dateFormatSplit = dateFormat.split('/')
+        var dateFinalString = ''
 
-          for(let i = 0; i < dateFormatSplit.length; i++) {
-            var intermediateDate = moment().format("" + dateFormatSplit[i]);
-            if (i == dateFormatSplit.length - 1) {
-              dateFinalString = dateFinalString + intermediateDate;
-            } else {
-              dateFinalString = dateFinalString + intermediateDate + "/";
-            }
+        for (let i = 0; i < dateFormatSplit.length; i++) {
+          var intermediateDate = moment().format('' + dateFormatSplit[i])
+          if (i === dateFormatSplit.length - 1) {
+            dateFinalString = dateFinalString + intermediateDate
+          } else {
+            dateFinalString = dateFinalString + intermediateDate + '/'
           }
-          
-          map["_DATE"] = dateFinalString;
+        }
 
+        map['_DATE'] = dateFinalString
       }
 
-      if (labelsWith2Columns == false) {
+      if (labelsWith2Columns == false) { // eslint-disable-line eqeqeq
         // The _PRINT_QUANTITY in the map can only be changed directly
         map._PRINT_QUANTITY = numberOfLabelsToPrint
         sendToPrinter = this.replaceAll(ZPLString, map)
@@ -486,30 +472,26 @@ export default {
       this.sendZplToPrinter(printerIPAddress, printerPort, sendToPrinter)
     },
     async printBoxLabels (orderId, counterInitialNumber, counterFinalNumber, numberOfLabelsToPrint) {
-
       let customerProductId = this.productLabel[0].CUSTOMER_PRODUCT_ID
       let barCodeNumber = this.productLabel[0].Bar_Code_Tech_Sheet
       let qtyByBox = this.productLabel[0].Qty_By_Box
       let productNameForLabel = this.productLabel[0].PRODUCT_NAME_FOR_LABEL
       let boxBarCodeType = this.productLabel[0].BOX_BARCODE_TYPE
-      let zplStringTestLabel = this.productLabel[0].ZPL_STRING_BOX
       let zplStringAllLabels = this.productLabel[0].ZPL_STRING_BOX
       let printerIPAddress = this.productLabel[0].BOX_PRINTER_IP_ADDRESS
       let printerPort = this.productLabel[0].BOX_PRINTER_PORT
       let labelHasCounter = this.productLabel[0].LABEL_HAS_COUNTER
       let numberLabelsOnBox = this.productLabel[0].NUMBER_LABELS_ON_BOX
-      let boxLabelPrintDelay = this.productLabel[0].LABEL_WITH_COUNTER_PRINT_DELAY
-      let labelHasDate = this.productLabel[0].LABEL_HAS_DATE;
-      let dateFormat = this.productLabel[0].DATE_FORMAT;
+      let labelHasDate = this.productLabel[0].LABEL_HAS_DATE
+      let dateFormat = this.productLabel[0].DATE_FORMAT
       let FullEan = ''
       let checkDigit = ''
       let EanWithCheckDigit = ''
       let quantityFull = ''
-      let sendToPrinterTestLabel = ''
       let sendToPrinterAllLabels = ''
       let quantityBoxLabels = 0
 
-      if(numberOfLabelsToPrint != null) {
+      if (numberOfLabelsToPrint != null) {
         quantityBoxLabels = numberOfLabelsToPrint
       } else {
         quantityBoxLabels = counterFinalNumber
@@ -542,18 +524,7 @@ export default {
             '_PRINT_QUANTITY': quantityBoxLabels
           }
 
-          let mapTestLabel = {
-            '_EAN_CHECK_DIGIT': EanWithCheckDigit,
-            '_QUANTIDADE_EXTENDIDA': quantityFull,
-            '_FULL_EAN': FullEan,
-            '_NUM_ARTIGO': customerProductId,
-            '_NOME_ARTIGO': productNameForLabel,
-            '_ORDER_ID': orderId,
-            '_QUANTIDADE': qtyByBox,
-            '_PRINT_QUANTITY': 1
-          }
-
-          //sendToPrinterTestLabel = this.replaceAll(zplStringTestLabel, mapTestLabel)
+          // sendToPrinterTestLabel = this.replaceAll(zplStringTestLabel, mapTestLabel)
 
           sendToPrinterAllLabels = this.replaceAll(zplStringAllLabels, map)
 
@@ -607,13 +578,12 @@ export default {
             }
           }
 
-          //sendToPrinterTestLabel = this.replaceAll(zplStringTestLabel, mapTestLabel)
+          // sendToPrinterTestLabel = this.replaceAll(zplStringTestLabel, mapTestLabel)
 
           sendToPrinterAllLabels = this.replaceAll(zplStringAllLabels, map)
 
           this.sendZplToPrinter(printerIPAddress, printerPort, sendToPrinterAllLabels)
         }
-
       } else { // THE LABEL HAS A COUNTER
         // We need to remove the first digit to calculate the checksum for the EAN-13
         if (barCodeNumber.charAt(0) === '0') {
@@ -624,8 +594,8 @@ export default {
           EanWithCheckDigit = barCodeNumber
         }
 
-        let counterInitialNumberPadded = this.padDigits(counterInitialNumber, counterFinalNumber.toString().length) + '';
-        let totalLabelsToPrint= ((counterFinalNumber - counterInitialNumber) + 1) * numberLabelsOnBox;
+        let counterInitialNumberPadded = this.padDigits(counterInitialNumber, counterFinalNumber.toString().length) + ''
+        let totalLabelsToPrint = ((counterFinalNumber - counterInitialNumber) + 1) * numberLabelsOnBox
 
         let map = {
           '_EAN_CHECK_DIGIT': EanWithCheckDigit,
@@ -667,26 +637,25 @@ export default {
           }
         }
 
-        if(labelHasDate == 'true') {
-          var dateFormatSplit = dateFormat.split('/');
-          var dateFinalString = "";
+        if (labelHasDate === 'true') {
+          var dateFormatSplit = dateFormat.split('/')
+          var dateFinalString = ''
 
-          for(let i = 0; i < dateFormatSplit.length; i++) {
-            var intermediateDate = moment().format("" + dateFormatSplit[i]);
-            if (i == dateFormatSplit.length - 1) {
-              dateFinalString = dateFinalString + intermediateDate;
+          for (let i = 0; i < dateFormatSplit.length; i++) {
+            var intermediateDate = moment().format('' + dateFormatSplit[i])
+            if (i === dateFormatSplit.length - 1) {
+              dateFinalString = dateFinalString + intermediateDate
             } else {
-              dateFinalString = dateFinalString + intermediateDate + "/";
+              dateFinalString = dateFinalString + intermediateDate + '/'
             }
           }
-          
-          map["_DATE"] = dateFinalString;
 
+          map['_DATE'] = dateFinalString
         }
 
-        //let digitsForPadding = totalLabelsToPrint.toString().length
+        // let digitsForPadding = totalLabelsToPrint.toString().length
 
-        //sendToPrinterTestLabel = this.replaceAll(zplStringTestLabel, mapTestLabel)
+        // sendToPrinterTestLabel = this.replaceAll(zplStringTestLabel, mapTestLabel)
 
         sendToPrinterAllLabels = this.replaceAll(zplStringAllLabels, map)
 
@@ -694,8 +663,7 @@ export default {
 
         this.sendZplToPrinter(printerIPAddress, printerPort, sendToPrinterAllLabels)
 
-        //await this.executeCycleToPrintLabels(sendToPrinterAllLabels, counterInitialNumber, counterFinalNumber, printerIPAddress, printerPort, boxLabelPrintDelay)
-
+        // await this.executeCycleToPrintLabels(sendToPrinterAllLabels, counterInitialNumber, counterFinalNumber, printerIPAddress, printerPort, boxLabelPrintDelay)
       }
     }
   }
@@ -877,109 +845,108 @@ a.search-toggle {
 }
 
 .label-right {
-	 max-width: 50%;
-	 float: left;
+  max-width: 50%;
+  float: left;
 }
 
 img.label-detail {
-	 max-width: 100%;
+  max-width: 100%;
 }
 
 .label-bottom {
-	 width: 100%;
-	 float: left;
+  width: 100%;
+  float: left;
 }
 
 .label-options {
-	 padding-top: 12px;
-	 padding-bottom: 24px;
+  padding-top: 12px;
+  padding-bottom: 24px;
 }
 
 .label-options label {
-	 margin-left: 29px;
-	 line-height: 26px;
-	 cursor: pointer;
+  margin-left: 29px;
+  line-height: 26px;
+  cursor: pointer;
 }
 
 .checkbox-wrap {
-	 margin-top: 4px;
+  margin-top: 4px;
 }
 
 .checkbox-wrap {
-	 position: relative;
+  position: relative;
 }
 
 .checkbox-wrap input.special-checkbox, .checkbox-wrap .checkbox-all {
-	 opacity: 0;
-	 position: absolute;
-	 width: 24px;
-	 height: 24px;
-	 top: 0px;
-	 left: 12px;
-	 width: 24px;
-	 height: 24px;
-	 z-index: 1;
+  opacity: 0;
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  top: 0px;
+  left: 12px;
+  width: 24px;
+  height: 24px;
+  z-index: 1;
 }
 
 .checkbox-wrap span.checkbox-item {
-	 width: 24px;
-	 height: 24px;
-	 position: relative;
-	 background-image: url(../assets/icons/checkbox.png);
-	 background-size: 24px;
-	 background-position: 0px 0px;
-	 position: absolute;
+  width: 24px;
+  height: 24px;
+  position: relative;
+  background-image: url(../assets/icons/checkbox.png);
+  background-size: 24px;
+  background-position: 0px 0px;
+  position: absolute;
 }
 
 .checkbox-wrap input.special-checkbox:checked ~ span.checkbox-item, .checkbox-wrap input.checkbox-all:checked ~ span.checkbox-item {
-	 background-position: 0px 24px;
+  background-position: 0px 24px;
 }
 
 .label-button button.btn-save {
-	 height: 48px;
-	 width: 100%;
-	 text-align: center;
-	 border-radius: 2px;
-	 background-color: #27ae60;
-	 font-size: 16px;
-	 font-weight: normal;
-	 font-style: normal;
-	 font-stretch: normal;
-	 line-height: normal;
-	 letter-spacing: normal;
-	 color: #fff;
-	 border: 0px;
-	 width: 100%;
-	 max-width: 50%;
+  height: 48px;
+  width: 100%;
+  text-align: center;
+  border-radius: 2px;
+  background-color: #27ae60;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  color: #fff;
+  border: 0px;
+  width: 100%;
+  max-width: 50%;
 }
 
 .label-button button img {
-	 margin-right: 6px;
+  margin-right: 6px;
 }
 
 .label-quantity label.control-label,  .label-quantity .control-label {
-	 width: 100%;
-	 float: left;
-	 text-align: left !important;
-	 font-size: 16px;
-	 font-weight: bold;
-	 font-style: normal;
-	 font-stretch: normal;
-	 line-height: normal;
-	 letter-spacing: normal;
-	 color: #222;
-	 margin-bottom: 8px;
-	 padding-top: 0px;
+  width: 100%;
+  float: left;
+  text-align: left !important;
+  font-size: 16px;
+  font-weight: bold;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  color: #222;
+  margin-bottom: 8px;
+  padding-top: 0px;
 }
 
-
 .input-wrap-inner {
-	 color: #c21414;
-	 font-size: 14px;
-	 font-weight: normal;
-	 width: 100%;
-	 float: left;
-	 padding: 6px 0 6px;
+  color: #c21414;
+  font-size: 14px;
+  font-weight: normal;
+  width: 100%;
+  float: left;
+  padding: 6px 0 6px;
 }
 
 .product-image-label{
@@ -1070,7 +1037,7 @@ img.label-detail {
         letter-spacing: normal;
         color: #ffffff;
     }
-    
+
     button.btn-cancel {
         height: 48px;
         width: 100%;
@@ -1105,7 +1072,7 @@ img.label-detail {
             margin-top: -3px;
         }
     }
-    
+
     button.btn-save {
         height: 48px;
         width: 100%;
@@ -1159,6 +1126,5 @@ input.form-control, textarea{
         box-shadow:inset -1px -1px 2px 0 rgba(118,118,118,0.25) !important;
     }
 }
-
 
 </style>

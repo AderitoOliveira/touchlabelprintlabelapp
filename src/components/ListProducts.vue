@@ -97,24 +97,24 @@
 
 <script>
 import axios from 'axios'
-import _ from 'lodash';
+import _ from 'lodash'
 
 let sitebase
 let imageBase
 
 if (process.env.NODE_ENV === 'development') {
-  //sitebase = 'http://' + process.env.IP_ADDRESS + ':8080/',
-  //imageBase = 'http://' + process.env.IP_ADDRESS + ':8080/images/'
-  //sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
-  //imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/images/'
-  sitebase = 'http://52.31.54.200:8080/',
+  // sitebase = 'http://' + process.env.IP_ADDRESS + ':8080/',
+  // imageBase = 'http://' + process.env.IP_ADDRESS + ':8080/images/'
+  // sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
+  // imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/images/'
+  sitebase = 'http://52.31.54.200:8080/'
   imageBase = 'http://52.31.54.200:8080/'
 } else {
-  //sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
-  //imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/images/'
-  //sitebase = 'http://192.168.1.8:8080/',
-  //imageBase = 'http://192.168.1.8:8080/images/'
-  sitebase = 'http://52.31.54.200:8080/',
+  // sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
+  // imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/images/'
+  // sitebase = 'http://192.168.1.8:8080/',
+  // imageBase = 'http://192.168.1.8:8080/images/'
+  sitebase = 'http://52.31.54.200:8080/'
   imageBase = 'http://52.31.54.200:8080/'
 }
 
@@ -139,24 +139,9 @@ export default {
       console.error(error)
     })
   },
-  computed: {
-    filterProducts: function () {
-      if (this.search && this.search != this.currentSearch) {
-          this.currentSearch = this.search;
-        console.log(this.currentSearch)
-        console.log(this.search)
-        axios({ method: 'GET', 'url': sitebase + searchProduct + this.search }).then(result => {
-            this.products = result.data
-            return this.products
-            }, error => {
-            console.error(error)
-            })
-      }
-    }
-  },
   methods: {
-    listLabels(){
-     this.$router.push('/'); 
+    listLabels () {
+      this.$router.push('/')
     },
     toggleSearch () {
       if (this.showSearch === true) {
@@ -171,24 +156,24 @@ export default {
         this.searchFilterDebounce()
       }, 800),
     searchFilterDebounce () {
-      //alert(this.search)
+      // alert(this.search)
       if (this.search !== '') {
         axios({ method: 'GET', 'url': sitebase + searchProduct + encodeURIComponent(this.search) }).then(result => {
-          this.products = result.data;
+          this.products = result.data
           return this.products
-          }, error => {
-              console.error(error)
-         })
-         } else {
-             axios({ method: 'GET', 'url': sitebase + getProducts }).then(result => {
-                this.products = result.data
-                }, error => {
-                console.error(error)
-            })
-          }
+        }, error => {
+          console.error(error)
+        })
+      } else {
+        axios({ method: 'GET', 'url': sitebase + getProducts }).then(result => {
+          this.products = result.data
+        }, error => {
+          console.error(error)
+        })
+      }
     },
     printProductLabel (customerProductId) {
-      //alert(customerProductId)
+      // alert(customerProductId)
       this.$router.push({ name: 'ProductPrintLabels', params: { customerProductId } })
     }
   }

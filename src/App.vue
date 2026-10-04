@@ -22,15 +22,13 @@
 
 <script>
 
-import VueRouter from 'vue-router'
-
 export default {
   name: 'TouchLabelPrint',
-  methods:{
-   listProducts(){
-     this.$router.push('/listProducts'); 
-   }  
-}
+  methods: {
+    listProducts () {
+      this.$router.push('/listProducts')
+    }
+  }
 }
 </script>
 
