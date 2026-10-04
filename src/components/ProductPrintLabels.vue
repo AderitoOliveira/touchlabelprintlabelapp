@@ -158,13 +158,17 @@ let imageBase
 if (process.env.NODE_ENV === 'development') {
   //sitebase = 'http://' + process.env.IP_ADDRESS + ':8080/',
   //imageBase = 'http://' + process.env.IP_ADDRESS + ':8080/images/'
-  sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
-  imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/images/'
+  //sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
+  //imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/images/'
+  sitebase = 'http://52.31.54.200:8080/',
+  imageBase = 'http://52.31.54.200:8080/'
 } else {
-  sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
-  imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/images/'
+  //sitebase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/',
+  //imageBase = 'http://touchlabel-castanheira-dantas.e4ff.pro-eu-west-1.openshiftapps.com/images/'
   //sitebase = 'http://192.168.1.8:8080/',
   //imageBase = 'http://192.168.1.8:8080/images/'
+  sitebase = 'http://52.31.54.200:8080/',
+  imageBase = 'http://52.31.54.200:8080/'
 }
 
 const getProductLabelDetail = 'labelToPrintForProduct/'
