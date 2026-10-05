@@ -40,3 +40,5 @@ From a Windows Command Prompt:
     before distributing.
   - If you move Java 8 or the build tools: the paths are at the top of the script (JDK8 and BUILD_TOOLS).
 ```
+
+
