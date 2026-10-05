@@ -9,7 +9,9 @@ REM Release signing:
 REM   The release APK is zipaligned and signed with the keystore in KEYSTORE
 REM   (default: touchlabel-release.jks in this folder, alias "touchlabel").
 REM   Create it once with:
-REM     keytool -genkeypair -v -keystore touchlabel-release.jks -alias touchlabel -keyalg RSA -keysize 2048 -validity 10000
+REM     "C:\Program Files\Java\jdk1.8.0_202\bin\keytool" -genkeypair -v -keystore touchlabel-release.jks -alias touchlabel -keyalg RSA -keysize 2048 -validity 10000
+REM   Use the JDK 8 keytool: keystores made by newer JDKs (12+) use PKCS12 encryption
+REM   that JDK 8 cannot read ("Invalid keystore format" when signing).
 REM   Set KEYSTORE_PASS to the keystore password to sign without being prompted.
 REM   KEYSTORE and KEY_ALIAS can also be overridden through environment variables.
 REM   Keep the keystore and its password safe: every update must be signed with
@@ -51,7 +53,7 @@ REM Check signing prerequisites before spending time on the build.
 if /i not "%BUILD_TYPE%"=="Release" goto :checks_done
 if not exist "%KEYSTORE%" (
   echo Keystore not found at "%KEYSTORE%". >&2
-  echo Create it with: keytool -genkeypair -v -keystore "%KEYSTORE%" -alias %KEY_ALIAS% -keyalg RSA -keysize 2048 -validity 10000 >&2
+  echo Create it with the JDK 8 keytool: "%JDK8%\bin\keytool" -genkeypair -v -keystore "%KEYSTORE%" -alias %KEY_ALIAS% -keyalg RSA -keysize 2048 -validity 10000 >&2
   exit /b 1
 )
 if not exist "%BT_DIR%\apksigner.bat" (
