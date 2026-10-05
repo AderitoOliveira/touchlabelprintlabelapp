@@ -582,12 +582,14 @@ export default {
       let mapTestLabel = {
         '_EAN_CHECK_DIGIT': eanWithCheckDigit,
         '_NUM_ARTIGO': customerProductId,
+        '_ORDER_ID': orderId,
         '_PRINT_QUANTITY': 1
       }
 
       let map = {
         '_EAN_CHECK_DIGIT': eanWithCheckDigit,
         '_NUM_ARTIGO': customerProductId,
+        '_ORDER_ID': orderId,
         '_PRINT_QUANTITY': quantityToReplace
       }
 
@@ -741,6 +743,22 @@ export default {
             '_ORDER_ID': orderId,
             '_QUANTIDADE': qtyByBox,
             '_PRINT_QUANTITY': 1
+          }
+
+          if (productNameForLabel.indexOf('\n') === -1) {
+            map._NOME_ARTIGO = productNameForLabel
+            mapTestLabel._NOME_ARTIGO = productNameForLabel
+          } else {
+            let productNameForLabelSplit = productNameForLabel.split('\n')
+
+            let nomeArtigo = productNameForLabelSplit[0]
+            map._NOME_ARTIGO = nomeArtigo
+            mapTestLabel._NOME_ARTIGO = nomeArtigo
+
+            for (let i = 1; i < productNameForLabelSplit.length; i++) {
+              map['_ARTIGO_NOME_EXT_' + i] = productNameForLabelSplit[i]
+              mapTestLabel['_ARTIGO_NOME_EXT_' + i] = productNameForLabelSplit[i]
+            }
           }
 
           sendToPrinterTestLabel = this.replaceAll(zplStringTestLabel, mapTestLabel)
