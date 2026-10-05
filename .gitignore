@@ -17,3 +17,7 @@ package-lock.json
 *.ntvs*
 *.njsproj
 *.sln
+
+# Android signing keystore
+*.jks
+*.keystore
