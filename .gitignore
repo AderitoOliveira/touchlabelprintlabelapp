@@ -21,3 +21,4 @@ package-lock.json
 # Android signing keystore
 *.jks
 *.keystore
+*.jks_
