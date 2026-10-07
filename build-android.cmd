@@ -9,27 +9,23 @@ REM Release signing:
 REM   The release APK is zipaligned and signed with the keystore in KEYSTORE
 REM   (default: touchlabel-release.jks in this folder, alias "touchlabel").
 REM   Create it once with:
-REM     "C:\Program Files\Java\jdk1.8.0_202\bin\keytool" -genkeypair -v -keystore touchlabel-release.jks -alias touchlabel -keyalg RSA -keysize 2048 -validity 10000
-REM   Use the JDK 8 keytool: keystores made by newer JDKs (12+) use PKCS12 encryption
-REM   that JDK 8 cannot read ("Invalid keystore format" when signing).
+REM     "C:\Program Files\Eclipse Adoptium\jdk-17.0.20.101-hotspot\bin\keytool" -genkeypair -v -keystore touchlabel-release.jks -alias touchlabel -keyalg RSA -keysize 2048 -validity 10000
 REM   Set KEYSTORE_PASS to the keystore password to sign without being prompted.
 REM   KEYSTORE and KEY_ALIAS can also be overridden through environment variables.
 REM   Keep the keystore and its password safe: every update must be signed with
 REM   the same key, otherwise Android refuses to install it over the old app.
 REM
 REM Notes:
-REM   - cordova-android 8.1.0 only builds with JDK 8, so JAVA_HOME is set to it
-REM     for this script only.
-REM   - "cordova build android" crashes on recent Node versions (it spawns a .bat
-REM     without a shell), so we run "cordova prepare" and then call Gradle directly.
-REM   - Build tools 30.0.3 are forced because the latest installed (34.x) are not
-REM     compatible with the Android Gradle Plugin 3.3 used by this platform. Their
-REM     apksigner also still runs on JDK 8.
+REM   - cordova-android 14 targets Android 15 (API 35) and requires JDK 17, so
+REM     JAVA_HOME is set to it for this script only. Older target SDKs are blocked
+REM     by Play Protect ("built for an older version of Android").
+REM   - Requires Android SDK platform 35 and build tools 35.0.0.
 
 setlocal
 
-set "JDK8=C:\Program Files\Java\jdk1.8.0_202"
-set "BUILD_TOOLS=30.0.3"
+set "JDK17=C:\Program Files\Eclipse Adoptium\jdk-17.0.20.101-hotspot"
+set "BUILD_TOOLS=35.0.0"
+set "APK_NAME=touchLabelPrinLabel.apk"
 
 if not defined KEYSTORE set "KEYSTORE=%~dp0touchlabel-release.jks"
 if not defined KEY_ALIAS set "KEY_ALIAS=touchlabel"
@@ -42,18 +38,18 @@ set "BT_DIR=%SDK%\build-tools\%BUILD_TOOLS%"
 set "BUILD_TYPE=Debug"
 if /i "%~1"=="release" set "BUILD_TYPE=Release"
 
-if not exist "%JDK8%\bin\java.exe" (
-  echo JDK 8 not found at "%JDK8%". Edit JDK8 in this script. >&2
+if not exist "%JDK17%\bin\java.exe" (
+  echo JDK 17 not found at "%JDK17%". Edit JDK17 in this script. >&2
   exit /b 1
 )
-set "JAVA_HOME=%JDK8%"
+set "JAVA_HOME=%JDK17%"
 set "PATH=%JAVA_HOME%\bin;%PATH%"
 
 REM Check signing prerequisites before spending time on the build.
 if /i not "%BUILD_TYPE%"=="Release" goto :checks_done
 if not exist "%KEYSTORE%" (
   echo Keystore not found at "%KEYSTORE%". >&2
-  echo Create it with the JDK 8 keytool: "%JDK8%\bin\keytool" -genkeypair -v -keystore "%KEYSTORE%" -alias %KEY_ALIAS% -keyalg RSA -keysize 2048 -validity 10000 >&2
+  echo Create it with: "%JDK17%\bin\keytool" -genkeypair -v -keystore "%KEYSTORE%" -alias %KEY_ALIAS% -keyalg RSA -keysize 2048 -validity 10000 >&2
   exit /b 1
 )
 if not exist "%BT_DIR%\apksigner.bat" (
@@ -72,37 +68,35 @@ if not exist node_modules (
 echo === Building web app into www\dist ===
 call npm run build || goto :fail
 
-echo === Copying web assets into the Android platform ===
-call cordova.cmd prepare android || goto :fail
+echo === Building %BUILD_TYPE% APK with Cordova ===
+if /i "%BUILD_TYPE%"=="Release" goto :build_release
+call cordova.cmd build android || goto :fail
 
-echo === Building %BUILD_TYPE% APK with Gradle ===
-pushd platforms\android
-call gradlew.bat cdvBuild%BUILD_TYPE% -PcdvBuildToolsVersion=%BUILD_TOOLS%
-set "GRADLE_RESULT=%ERRORLEVEL%"
-popd
-if not "%GRADLE_RESULT%"=="0" goto :fail
-
-if /i "%BUILD_TYPE%"=="Release" goto :sign
+set "DEBUG_APK=%~dp0platforms\android\app\build\outputs\apk\debug\%APK_NAME%"
+copy /y "%~dp0platforms\android\app\build\outputs\apk\debug\app-debug.apk" "%DEBUG_APK%" >nul || goto :fail
 
 echo.
 echo Build successful. APK:
-echo   %~dp0platforms\android\app\build\outputs\apk\debug\app-debug.apk
-echo   Install on a device with: adb install -r "%~dp0platforms\android\app\build\outputs\apk\debug\app-debug.apk"
+echo   %DEBUG_APK%
+echo   Install on a device with: adb install -r "%DEBUG_APK%"
 popd
 exit /b 0
 
-:sign
+:build_release
+REM Release builds default to an .aab bundle; force an unsigned APK and sign it below.
+call cordova.cmd build android --release -- --packageType=apk || goto :fail
+
 set "OUT=%~dp0platforms\android\app\build\outputs\apk\release"
 set "UNSIGNED=%OUT%\app-release-unsigned.apk"
 set "ALIGNED=%OUT%\app-release-aligned.apk"
-set "SIGNED=%OUT%\touchlabel-release.apk"
+set "SIGNED=%OUT%\%APK_NAME%"
 
 echo === Zipaligning release APK ===
 if exist "%ALIGNED%" del "%ALIGNED%"
 "%BT_DIR%\zipalign.exe" -p 4 "%UNSIGNED%" "%ALIGNED%" || goto :fail
 
 echo === Signing release APK ===
-REM minSdk is 19, so apksigner adds v1 (Android 4.4-6) and v2/v3 (Android 7+) signatures.
+REM minSdk is 24, so apksigner adds v2/v3 signatures (Android 7+).
 if exist "%SIGNED%" del "%SIGNED%"
 if defined KEYSTORE_PASS (
   call "%BT_DIR%\apksigner.bat" sign --ks "%KEYSTORE%" --ks-key-alias "%KEY_ALIAS%" --ks-pass env:KEYSTORE_PASS --out "%SIGNED%" "%ALIGNED%" || goto :fail
